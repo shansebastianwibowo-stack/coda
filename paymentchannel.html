@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Channels Directory</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 12px; width: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background: #ffffff; }
+    
+    .filter-grid-pc { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .filter-group-pc { display: flex; flex-direction: column; gap: 4px; }
+    .filter-group-pc label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .filter-group-pc input, .filter-group-pc select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; background-color: #fff; width: 100%; }
+    
+    .meta-info-pc { font-size: 13px; color: #64748b; margin-bottom: 12px; font-weight: 500; }
+    
+    .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
+    .table-container-pc table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; table-layout: auto; }
+    .table-container-pc th { background: #f8fafc; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #475569; white-space: nowrap; }
+    .table-container-pc td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; white-space: nowrap; }
+    .table-container-pc tr:hover { background: #f8fafc; }
+    
+    .badge-pc { display: inline-block; padding: 2px 6px; border-radius: 12px; font-size: 11px; font-weight: 600; background-color: #e2e8f0; color: #334155; }
+    .channel-name-pc { font-weight: 600; color: #0f172a; }
+    .sub-text-pc { font-size: 11px; color: #64748b; }
+  </style>
+</head>
+<body>
+
+  <div class="filter-grid-pc">
+    <div class="filter-group-pc">
+      <label for="searchInput">Search</label>
+      <input type="text" id="searchInput" placeholder="Search channel, product, ID..." />
+    </div>
+    <div class="filter-group-pc">
+      <label for="countrySelect">Country</label>
+      <select id="countrySelect"><option value="">All Countries</option></select>
+    </div>
+    <div class="filter-group-pc">
+      <label for="typeSelect">Type</label>
+      <select id="typeSelect"><option value="">All Types</option></select>
+    </div>
+  </div>
+
+  <div class="meta-info-pc" id="countDisplay">Fetching payment channels...</div>
+
+  <div class="table-container-pc">
+    <table>
+      <thead>
+        <tr>
+          <th>Country</th>
+          <th>Currency</th>
+          <th>Payment Channel</th>
+          <th>Type</th>
+          <th>Channel ID</th>
+          <th>Limits (Min – Max)</th>
+          <th>Price Point & Decimals</th>
+          <th>API Integration</th>
+          <th>Applicable Product</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const SPREADSHEET_ID = '19txcCv_OTSISqQYDQObvQSfSpMCkHj4gBjmUw6oyd-w';
+    const GID = '0';
+    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
+
+    let rawData = [];
+
+    function formatNumber(val) {
+      if (!val || isNaN(val.replace(/,/g, ''))) return val || '-';
+      const num = parseFloat(val.replace(/,/g, ''));
+      return num.toLocaleString();
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      if (lines.length <= 1) return [];
+
+      return lines.slice(1).map(line => {
+        const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
+        return {
+          country: cols[1] || '-',
+          currency: cols[2] || '-',
+          channel: cols[3] || '-',
+          type: cols[4] || '-',
+          channelId: cols[5] || '-',
+          min: formatNumber(cols[6]),
+          max: formatNumber(cols[7]),
+          pricePointType: cols[8] || '-',
+          decimalSupport: cols[9] || '-',
+          apiIntegration: cols[10] || '-',
+          product: cols[11] || '-'
+        };
+      });
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch(CSV_URL);
+        if (!res.ok) throw new Error('Network error');
+        const text = await res.text();
+        rawData = parseCSV(text);
+        populateDropdowns();
+        renderTable();
+      } catch (err) {
+        document.getElementById('countDisplay').innerText = 'Unable to load payment channels. Please ensure the Google Sheet is published to web.';
+      }
+    }
+
+    function populateDropdowns() {
+      const countries = [...new Set(rawData.map(d => d.country))].filter(v => v !== '-').sort();
+      const types = [...new Set(rawData.map(d => d.type))].filter(v => v !== '-').sort();
+      
+      fillSelect('countrySelect', countries, 'All Countries');
+      fillSelect('typeSelect', types, 'All Types');
+    }
+
+    function fillSelect(id, items, defaultText) {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="">${defaultText}</option>` + items.map(i => `<option value="${i}">${i}</option>`).join('');
+    }
+
+    function renderTable() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const country = document.getElementById('countrySelect').value;
+      const type = document.getElementById('typeSelect').value;
+
+      const filtered = rawData.filter(d => {
+        const matchSearch = !search || 
+          d.channel.toLowerCase().includes(search) || 
+          d.country.toLowerCase().includes(search) ||
+          d.channelId.toLowerCase().includes(search) ||
+          d.product.toLowerCase().includes(search);
+        const matchCountry = !country || d.country === country;
+        const matchType = !type || d.type === type;
+        return matchSearch && matchCountry && matchType;
+      });
+
+      document.getElementById('countDisplay').innerText = `Showing ${filtered.length} channel(s)`;
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px;">No payment channels matched your selection.</td></tr>';
+        return;
+      }
+
+      filtered.forEach(d => {
+        const tr = document.createElement('tr');
+        const limits = (d.min === '-' && d.max === '-') ? '-' : `${d.min} – ${d.max}`;
+        const pricePointAndDecimals = `${d.pricePointType} <span class="sub-text-pc">(Decimals: ${d.decimalSupport})</span>`;
+
+        tr.innerHTML = `
+          <td>${d.country}</td>
+          <td>${d.currency}</td>
+          <td class="channel-name-pc">${d.channel}</td>
+          <td><span class="badge-pc">${d.type}</span></td>
+          <td><code>${d.channelId}</code></td>
+          <td>${limits}</td>
+          <td>${pricePointAndDecimals}</td>
+          <td>${d.apiIntegration}</td>
+          <td>${d.product}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('countrySelect').onchange = renderTable;
+    document.getElementById('typeSelect').onchange = renderTable;
+    document.getElementById('searchInput').oninput = renderTable;
+
+    loadData();
+  </script>
+</body>
+</html>
