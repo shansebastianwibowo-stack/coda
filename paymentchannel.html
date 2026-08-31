@@ -59,8 +59,6 @@
 
     .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
 
-    /* Fluid width — fills whatever space the webframe actually gives it,
-       instead of a fixed pixel value that only fits one screen size. */
     .table-container-pc table { table-layout: fixed; width: 100%; border-collapse: collapse; }
     .table-container-pc th { 
       background: #f8fafc; 
@@ -97,8 +95,6 @@
     }
     .sub-text-pc { font-size: 9px; color: #64748b; }
 
-    /* 6 columns, widths as % of total (proportional to the previous
-       763px layout: 220/85/75/85/85/218 → 28.8/11.1/9.8/11.1/11.1/28.1) */
     .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 28.8%; }
     .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 11.1%; }
     .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 9.8%; }
@@ -282,6 +278,16 @@
       sel.innerHTML = `<option value="">${defaultText}</option>` + items.map(i => `<option value="${i}">${i}</option>`).join('');
     }
 
+    function reportHeightToParent() {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage({
+        action: {
+          action: '@webframe.resize',
+          height: height,
+        },
+      }, '*');
+    }
+
     function renderTable() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const region = document.getElementById('regionSelect').value;
@@ -308,6 +314,7 @@
 
       if (filtered.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">No payment channels matched your selection.</td></tr>';
+        reportHeightToParent();
         return;
       }
 
@@ -343,6 +350,8 @@
         `;
         tbody.appendChild(tr);
       });
+
+      setTimeout(reportHeightToParent, 50);
     }
 
     document.getElementById('regionSelect').onchange = renderTable;
@@ -352,6 +361,8 @@
     document.getElementById('searchInput').oninput = renderTable;
 
     loadData();
+
+    setTimeout(reportHeightToParent, 500);
   </script>
 </body>
 </html>
