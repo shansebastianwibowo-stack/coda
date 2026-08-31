@@ -7,23 +7,54 @@
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; padding: 12px; width: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background: #ffffff; }
-    
-    .filter-grid-pc { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 12px; }
+
+    /* Filter Grid — content-sized columns, explicit widths per field,
+       capped to match the table's total width. */
+    .filter-grid-pc { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, max-content)); gap: 12px; margin-bottom: 12px; max-width: 1397px; }
     .filter-group-pc { display: flex; flex-direction: column; gap: 4px; }
     .filter-group-pc label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-    .filter-group-pc input, .filter-group-pc select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; background-color: #fff; width: 100%; }
-    
+    .filter-group-pc input, .filter-group-pc select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; background-color: #fff; width: auto; }
+
+    #searchInput   { width: 260px; }
+    #regionSelect  { width: 160px; }
+    #countrySelect { width: 180px; }
+    #typeSelect    { width: 200px; }
+    #productSelect { width: 160px; }
+
     .meta-info-pc { font-size: 13px; color: #64748b; margin-bottom: 12px; font-weight: 500; }
-    
+
     .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
-    .table-container-pc table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; table-layout: auto; }
-    .table-container-pc th { background: #f8fafc; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #475569; white-space: nowrap; }
-    .table-container-pc td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; white-space: nowrap; }
+
+    /* Fixed layout so explicit column widths are respected, with
+       wrapping enabled so long values move to a new line. */
+    .table-container-pc table { table-layout: fixed; width: 1397px; border-collapse: collapse; font-size: 13px; }
+    .table-container-pc th { background: #f8fafc; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #475569; }
+    .table-container-pc td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+
+    /* Center everything, both horizontally and vertically, with wrapping */
+    .table-container-pc th, .table-container-pc td { text-align: center; vertical-align: middle; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; }
+
     .table-container-pc tr:hover { background: #f8fafc; }
-    
+
     .badge-pc { display: inline-block; padding: 2px 6px; border-radius: 12px; font-size: 11px; font-weight: 600; background-color: #e2e8f0; color: #334155; }
     .channel-name-pc { font-weight: 600; color: #0f172a; }
     .sub-text-pc { font-size: 11px; color: #64748b; }
+
+    /* Per-column widths: 1 Region, 2 Country, 3 Currency, 4 Payment
+       Channel, 5 Type, 6 Channel ID, 7 Min, 8 Max, 9 Price Point Type,
+       10 Decimal Support, 11 Backend API Integration, 12 Applicable Product */
+    .table-container-pc th:nth-child(1),  .table-container-pc td:nth-child(1)  { width: 92px; }
+    .table-container-pc th:nth-child(2),  .table-container-pc td:nth-child(2)  { width: 140px; }
+    .table-container-pc th:nth-child(3),  .table-container-pc td:nth-child(3)  { width: 88px; }
+    .table-container-pc th:nth-child(4),  .table-container-pc td:nth-child(4)  { width: 110px; }
+    .table-container-pc th:nth-child(5),  .table-container-pc td:nth-child(5)  { width: 160px; }
+    .table-container-pc th:nth-child(6),  .table-container-pc td:nth-child(6)  { width: 80px; }
+    .table-container-pc th:nth-child(7),  .table-container-pc td:nth-child(7)  { width: 140px; }
+    .table-container-pc th:nth-child(8),  .table-container-pc td:nth-child(8)  { width: 140px; }
+    .table-container-pc th:nth-child(9),  .table-container-pc td:nth-child(9)  { width: 105px; }
+    .table-container-pc th:nth-child(10), .table-container-pc td:nth-child(10) { width: 135px; }
+    .table-container-pc th:nth-child(11), .table-container-pc td:nth-child(11) { width: 112px; }
+    .table-container-pc th:nth-child(12), .table-container-pc td:nth-child(12) { width: 95px; }
   </style>
 </head>
 <body>
@@ -34,12 +65,25 @@
       <input type="text" id="searchInput" placeholder="Search channel, product, ID..." />
     </div>
     <div class="filter-group-pc">
+      <label for="regionSelect">Region</label>
+      <select id="regionSelect"><option value="">All Regions</option></select>
+    </div>
+    <div class="filter-group-pc">
       <label for="countrySelect">Country</label>
       <select id="countrySelect"><option value="">All Countries</option></select>
     </div>
     <div class="filter-group-pc">
       <label for="typeSelect">Type</label>
       <select id="typeSelect"><option value="">All Types</option></select>
+    </div>
+    <div class="filter-group-pc">
+      <label for="productSelect">Applicable Product</label>
+      <select id="productSelect">
+        <option value="">All Products</option>
+        <option value="Codapay">Codapay</option>
+        <option value="Codashop">Codashop</option>
+        <option value="Webstore">Webstore</option>
+      </select>
     </div>
   </div>
 
@@ -49,14 +93,17 @@
     <table>
       <thead>
         <tr>
+          <th>Region</th>
           <th>Country</th>
           <th>Currency</th>
           <th>Payment Channel</th>
           <th>Type</th>
           <th>Channel ID</th>
-          <th>Limits (Min – Max)</th>
-          <th>Price Point & Decimals</th>
-          <th>API Integration</th>
+          <th>Min</th>
+          <th>Max</th>
+          <th>Price Point Type</th>
+          <th>Decimal Support</th>
+          <th>Backend API Integration</th>
           <th>Applicable Product</th>
         </tr>
       </thead>
@@ -78,103 +125,38 @@
     }
 
     function parseCSV(text) {
-      const lines = text.trim().split(/\r?\n/);
-      if (lines.length <= 1) return [];
+      // Full CSV parser — treats the entire text as ONE stream, not
+      // pre-split by newline. A quoted field CAN legally contain a real
+      // newline (e.g. a Google Sheets cell with multiple lines, like
+      // "Codashop\nCodapay\nWebstore"). Splitting by "\n" first — like
+      // the old version did — breaks that single row into multiple
+      // broken rows and desyncs every column after it.
+      const rows = [];
+      let row = [];
+      let field = '';
+      let inQuotes = false;
 
-      return lines.slice(1).map(line => {
-        const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
-        return {
-          country: cols[1] || '-',
-          currency: cols[2] || '-',
-          channel: cols[3] || '-',
-          type: cols[4] || '-',
-          channelId: cols[5] || '-',
-          min: formatNumber(cols[6]),
-          max: formatNumber(cols[7]),
-          pricePointType: cols[8] || '-',
-          decimalSupport: cols[9] || '-',
-          apiIntegration: cols[10] || '-',
-          product: cols[11] || '-'
-        };
-      });
-    }
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
 
-    async function loadData() {
-      try {
-        const res = await fetch(CSV_URL);
-        if (!res.ok) throw new Error('Network error');
-        const text = await res.text();
-        rawData = parseCSV(text);
-        populateDropdowns();
-        renderTable();
-      } catch (err) {
-        document.getElementById('countDisplay').innerText = 'Unable to load payment channels. Please ensure the Google Sheet is published to web.';
-      }
-    }
-
-    function populateDropdowns() {
-      const countries = [...new Set(rawData.map(d => d.country))].filter(v => v !== '-').sort();
-      const types = [...new Set(rawData.map(d => d.type))].filter(v => v !== '-').sort();
-      
-      fillSelect('countrySelect', countries, 'All Countries');
-      fillSelect('typeSelect', types, 'All Types');
-    }
-
-    function fillSelect(id, items, defaultText) {
-      const sel = document.getElementById(id);
-      sel.innerHTML = `<option value="">${defaultText}</option>` + items.map(i => `<option value="${i}">${i}</option>`).join('');
-    }
-
-    function renderTable() {
-      const search = document.getElementById('searchInput').value.toLowerCase();
-      const country = document.getElementById('countrySelect').value;
-      const type = document.getElementById('typeSelect').value;
-
-      const filtered = rawData.filter(d => {
-        const matchSearch = !search || 
-          d.channel.toLowerCase().includes(search) || 
-          d.country.toLowerCase().includes(search) ||
-          d.channelId.toLowerCase().includes(search) ||
-          d.product.toLowerCase().includes(search);
-        const matchCountry = !country || d.country === country;
-        const matchType = !type || d.type === type;
-        return matchSearch && matchCountry && matchType;
-      });
-
-      document.getElementById('countDisplay').innerText = `Showing ${filtered.length} channel(s)`;
-      const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = '';
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px;">No payment channels matched your selection.</td></tr>';
-        return;
-      }
-
-      filtered.forEach(d => {
-        const tr = document.createElement('tr');
-        const limits = (d.min === '-' && d.max === '-') ? '-' : `${d.min} – ${d.max}`;
-        const pricePointAndDecimals = `${d.pricePointType} <span class="sub-text-pc">(Decimals: ${d.decimalSupport})</span>`;
-
-        tr.innerHTML = `
-          <td>${d.country}</td>
-          <td>${d.currency}</td>
-          <td class="channel-name-pc">${d.channel}</td>
-          <td><span class="badge-pc">${d.type}</span></td>
-          <td><code>${d.channelId}</code></td>
-          <td>${limits}</td>
-          <td>${pricePointAndDecimals}</td>
-          <td>${d.apiIntegration}</td>
-          <td>${d.product}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    document.getElementById('countrySelect').onchange = renderTable;
-    document.getElementById('typeSelect').onchange = renderTable;
-    document.getElementById('searchInput').oninput = renderTable;
-
-    loadData();
-  </script>
-</body>
-</html>
+        if (inQuotes) {
+          if (char === '"') {
+            if (next === '"') {
+              field += '"';
+              i++;
+            } else {
+              inQuotes = false;
+            }
+          } else {
+            field += char;
+          }
+        } else {
+          if (char === '"') {
+            inQuotes = true;
+          } else if (char === ',') {
+            row.push(field.trim());
+            field = '';
+          } else if (char === '\r') {
+            // ignore
+          } else if
