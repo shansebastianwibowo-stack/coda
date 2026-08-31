@@ -13,7 +13,7 @@
       flex-wrap: wrap;
       gap: 12px;
       margin-bottom: 12px;
-      max-width: 920px;
+      max-width: 810px;
     }
     .filter-row1, .filter-row2 {
       flex: 0 0 auto;
@@ -59,7 +59,7 @@
 
     .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
 
-    .table-container-pc table { table-layout: fixed; width: 920px; border-collapse: collapse; }
+    .table-container-pc table { table-layout: fixed; width: 810px; border-collapse: collapse; }
     .table-container-pc th { 
       background: #f8fafc; 
       padding: 10px 12px; 
@@ -95,27 +95,19 @@
     }
     .sub-text-pc { font-size: 9px; color: #64748b; }
 
-    .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 180px; }
+    /* 6 columns: 1 Info (Region/Country/Currency/Type), 2 Payment
+       Channel, 3 Channel ID, 4 Min, 5 Max, 6 Detail */
+    .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 160px; }
     .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 110px; }
     .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 80px; }
     .table-container-pc th:nth-child(4), .table-container-pc td:nth-child(4) { width: 90px; }
     .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 90px; }
-    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 370px; }
+    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 280px; }
 
+    /* Info column (col 1) and Detail column (col 6) share the same
+       stacked "Label: Value" layout. */
     .info-col { text-align: left; }
     .info-col div { white-space: nowrap; font-size: 10px; }
-
-    /* Detail column: fixed 155px label / 205px value sub-columns,
-       so longer values like "[Codashop] [Codapay] [Webstore]" fit
-       on one line instead of wrapping. */
-    .detail-row {
-      display: grid;
-      grid-template-columns: 155px 205px;
-      gap: 4px 10px;
-      text-align: left;
-    }
-    .detail-label { text-align: left; color: #64748b; font-size: 9px; }
-    .detail-value { text-align: left; color: #334155; font-weight: 500; font-size: 10px; white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -314,11 +306,11 @@
         `;
 
         const detailHtml = `
-          <div class="detail-row">
-            <span class="detail-label">Price Point Type:</span><span class="detail-value">${d.pricePointType}</span>
-            <span class="detail-label">Decimal Support:</span><span class="detail-value">${d.decimalSupport}</span>
-            <span class="detail-label">Backend API Integration:</span><span class="detail-value">${d.apiIntegration}</span>
-            <span class="detail-label">Applicable Product:</span><span class="detail-value">${d.product}</span>
+          <div class="info-col">
+            <div>Price Point Type: ${d.pricePointType}</div>
+            <div>Decimal Support: ${d.decimalSupport}</div>
+            <div>Backend API Integration: ${d.apiIntegration}</div>
+            <div>Applicable Product: ${d.product}</div>
           </div>
         `;
 
