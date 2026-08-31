@@ -8,7 +8,26 @@
     * { box-sizing: border-box; }
     body { margin: 0; padding: 12px; width: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background: #ffffff; }
 
-    .filter-grid-pc { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, max-content)); gap: 12px; margin-bottom: 12px; max-width: 1397px; }
+    /* Filter grid — two explicit rows via flex-wrap, capped to match
+       the table's width, so it never stretches wide or overlaps in a
+       narrow frame like GitBook's webframe. */
+    .filter-grid-pc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+      max-width: 900px;
+    }
+    .filter-row1, .filter-row2 {
+      flex: 0 0 auto;
+    }
+    .row-break {
+      flex-basis: 100%;
+      height: 0;
+      margin: 0;
+      padding: 0;
+    }
+
     .filter-group-pc { display: flex; flex-direction: column; gap: 4px; }
     .filter-group-pc label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
     .filter-group-pc input, .filter-group-pc select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; background-color: #fff; width: auto; }
@@ -23,7 +42,7 @@
 
     .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
 
-    .table-container-pc table { table-layout: fixed; width: 1040px; border-collapse: collapse; font-size: 13px; }
+    .table-container-pc table { table-layout: fixed; width: 900px; border-collapse: collapse; font-size: 13px; }
     .table-container-pc th { background: #f8fafc; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #475569; }
     .table-container-pc td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
 
@@ -35,59 +54,53 @@
     .channel-name-pc { font-weight: 600; color: #0f172a; }
     .sub-text-pc { font-size: 11px; color: #64748b; }
 
-    /* 9 columns now: 1 Region, 2 Country, 3 Currency, 4 Payment Channel,
-       5 Type, 6 Channel ID, 7 Min, 8 Max, 9 Detail */
-    .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 92px; }
-    .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 140px; }
-    .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 88px; }
-    .table-container-pc th:nth-child(4), .table-container-pc td:nth-child(4) { width: 110px; }
-    .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 160px; }
-    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 80px; }
-    .table-container-pc th:nth-child(7), .table-container-pc td:nth-child(7) { width: 140px; }
-    .table-container-pc th:nth-child(8), .table-container-pc td:nth-child(8) { width: 140px; }
-    .table-container-pc th:nth-child(9), .table-container-pc td:nth-child(9) { width: 350px; } /* Detail */
+    /* 6 columns: 1 Info (Region/Country/Currency/Type), 2 Payment
+       Channel, 3 Channel ID, 4 Min, 5 Max, 6 Detail */
+    .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 180px; }
+    .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 110px; }
+    .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 80px; }
+    .table-container-pc th:nth-child(4), .table-container-pc td:nth-child(4) { width: 90px; }
+    .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 90px; }
+    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 350px; }
 
-    /* Detail column: label:value pairs stacked vertically, value on
-       the left (right-aligned within its half), label on the right
-       (left-aligned), matching a compact key-value layout. */
+    /* "Info" column: Label: Value stacked lines, left-aligned */
+    .info-col { text-align: left; }
+    .info-col div { white-space: nowrap; }
+
+    /* "Detail" column: value/label pairs in a 2-column grid */
     .detail-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 4px 10px;
       text-align: left;
     }
-    .detail-value {
-      text-align: right;
-      color: #334155;
-      font-weight: 500;
-    }
-    .detail-label {
-      text-align: left;
-      color: #64748b;
-      font-size: 12px;
-    }
+    .detail-value { text-align: right; color: #334155; font-weight: 500; }
+    .detail-label { text-align: left; color: #64748b; font-size: 12px; }
   </style>
 </head>
 <body>
 
   <div class="filter-grid-pc">
-    <div class="filter-group-pc">
+    <div class="filter-group-pc filter-row1">
       <label for="searchInput">Search</label>
       <input type="text" id="searchInput" placeholder="Search channel, product, ID..." />
     </div>
-    <div class="filter-group-pc">
+    <div class="filter-group-pc filter-row1">
       <label for="regionSelect">Region</label>
       <select id="regionSelect"><option value="">All Regions</option></select>
     </div>
-    <div class="filter-group-pc">
+    <div class="filter-group-pc filter-row1">
       <label for="countrySelect">Country</label>
       <select id="countrySelect"><option value="">All Countries</option></select>
     </div>
-    <div class="filter-group-pc">
+
+    <div class="row-break"></div>
+
+    <div class="filter-group-pc filter-row2">
       <label for="typeSelect">Type</label>
       <select id="typeSelect"><option value="">All Types</option></select>
     </div>
-    <div class="filter-group-pc">
+    <div class="filter-group-pc filter-row2">
       <label for="productSelect">Applicable Product</label>
       <select id="productSelect">
         <option value="">All Products</option>
@@ -104,11 +117,8 @@
     <table>
       <thead>
         <tr>
-          <th>Region</th>
-          <th>Country</th>
-          <th>Currency</th>
+          <th>Region / Country / Currency / Type</th>
           <th>Payment Channel</th>
-          <th>Type</th>
           <th>Channel ID</th>
           <th>Min</th>
           <th>Max</th>
@@ -247,12 +257,21 @@
       tbody.innerHTML = '';
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px;">No payment channels matched your selection.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">No payment channels matched your selection.</td></tr>';
         return;
       }
 
       filtered.forEach(d => {
         const tr = document.createElement('tr');
+
+        const infoHtml = `
+          <div class="info-col">
+            <div>Region: ${d.region}</div>
+            <div>Country: ${d.country}</div>
+            <div>Currency: ${d.currency}</div>
+            <div>Type: ${d.type}</div>
+          </div>
+        `;
 
         const detailHtml = `
           <div class="detail-row">
@@ -264,11 +283,8 @@
         `;
 
         tr.innerHTML = `
-          <td>${d.region}</td>
-          <td>${d.country}</td>
-          <td>${d.currency}</td>
+          <td>${infoHtml}</td>
           <td class="channel-name-pc">${d.channel}</td>
-          <td><span class="badge-pc">${d.type}</span></td>
           <td><code>${d.channelId}</code></td>
           <td>${d.min}</td>
           <td>${d.max}</td>
