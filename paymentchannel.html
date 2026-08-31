@@ -13,7 +13,7 @@
       flex-wrap: wrap;
       gap: 12px;
       margin-bottom: 12px;
-      max-width: 886px;
+      max-width: 763px;
     }
     .filter-row1, .filter-row2 {
       flex: 0 0 auto;
@@ -59,7 +59,7 @@
 
     .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
 
-    .table-container-pc table { table-layout: fixed; width: 886px; border-collapse: collapse; }
+    .table-container-pc table { table-layout: fixed; width: 763px; border-collapse: collapse; }
     .table-container-pc th { 
       background: #f8fafc; 
       padding: 10px 12px; 
@@ -102,12 +102,21 @@
     .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 75px; }
     .table-container-pc th:nth-child(4), .table-container-pc td:nth-child(4) { width: 85px; }
     .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 85px; }
-    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 341px; }
+    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 218px; }
 
-    /* Info column (col 1) and Detail column (col 6) share the same
-       stacked "Label: Value" layout. */
+    /* Info column: each line stays on one line (labels/values are
+       short and predictable, e.g. "Region: Asia"). */
     .info-col { text-align: left; }
     .info-col div { white-space: nowrap; font-size: 10px; }
+
+    /* Detail column: most lines stay on one line, but the Applicable
+       Product value can genuinely be long ("[Codashop][Codapay]
+       [Webstore]"), so it's allowed to wrap onto a second line only
+       when it doesn't fit — not forced onto its own line always. */
+    .detail-col { text-align: left; }
+    .detail-col div { font-size: 10px; }
+    .detail-col .detail-line { white-space: nowrap; }
+    .detail-col .detail-wrap { white-space: normal; word-wrap: break-word; }
   </style>
 </head>
 <body>
@@ -236,19 +245,20 @@
       });
     }
 
-async function loadData() {
-  try {
-    const res = await fetch(CSV_URL);
-    if (!res.ok) throw new Error('Network error');
-    const text = await res.text();
-    rawData = parseCSV(text);
-    populateDropdowns();
-    applyURLPresets();   // <-- new line
-    renderTable();
-  } catch (err) {
-    document.getElementById('countDisplay').innerText = 'Unable to load payment channels. Please ensure the Google Sheet is published to web.';
-  }
-}
+    async function loadData() {
+      try {
+        const res = await fetch(CSV_URL);
+        if (!res.ok) throw new Error('Network error');
+        const text = await res.text();
+        rawData = parseCSV(text);
+        populateDropdowns();
+        applyURLPresets();
+        renderTable();
+      } catch (err) {
+        document.getElementById('countDisplay').innerText = 'Unable to load payment channels. Please ensure the Google Sheet is published to web.';
+      }
+    }
+
     function populateDropdowns() {
       const regions = [...new Set(rawData.map(d => d.region))].filter(v => v !== '-').sort();
       const countries = [...new Set(rawData.map(d => d.country))].filter(v => v !== '-').sort();
@@ -258,18 +268,18 @@ async function loadData() {
       fillSelect('countrySelect', countries, 'All Countries');
       fillSelect('typeSelect', types, 'All Types');
     }
+
     function applyURLPresets() {
-  const params = new URLSearchParams(window.location.search);
-  const presetProduct = params.get('product');
-  if (presetProduct) {
-    const sel = document.getElementById('productSelect');
-    // Only set it if that value actually exists as an option
-    const validOptions = Array.from(sel.options).map(o => o.value);
-    if (validOptions.includes(presetProduct)) {
-      sel.value = presetProduct;
+      const params = new URLSearchParams(window.location.search);
+      const presetProduct = params.get('product');
+      if (presetProduct) {
+        const sel = document.getElementById('productSelect');
+        const validOptions = Array.from(sel.options).map(o => o.value);
+        if (validOptions.includes(presetProduct)) {
+          sel.value = presetProduct;
+        }
+      }
     }
-  }
-}
 
     function fillSelect(id, items, defaultText) {
       const sel = document.getElementById(id);
@@ -308,23 +318,24 @@ async function loadData() {
       filtered.forEach(d => {
         const tr = document.createElement('tr');
 
-const infoHtml = `
-  <div class="info-col">
-    <div>Region: <strong>${d.region}</strong></div>
-    <div>Country: <strong>${d.country}</strong></div>
-    <div>Currency: <strong>${d.currency}</strong></div>
-    <div>Type: <strong>${d.type}</strong></div>
-  </div>
-`;
+        const infoHtml = `
+          <div class="info-col">
+            <div>Region: <strong>${d.region}</strong></div>
+            <div>Country: <strong>${d.country}</strong></div>
+            <div>Currency: <strong>${d.currency}</strong></div>
+            <div>Type: <strong>${d.type}</strong></div>
+          </div>
+        `;
 
-const detailHtml = `
-  <div class="info-col">
-    <div>Price Point Type: <strong>${d.pricePointType}</strong></div>
-    <div>Decimal Support: <strong>${d.decimalSupport}</strong></div>
-    <div>Backend API Integration: <strong>${d.apiIntegration}</strong></div>
-    <div>Applicable Product: <strong>${d.product}</strong></div>
-  </div>
-`;
+        const detailHtml = `
+          <div class="detail-col">
+            <div class="detail-line">Price Point Type: <strong>${d.pricePointType}</strong></div>
+            <div class="detail-line">Decimal Support: <strong>${d.decimalSupport}</strong></div>
+            <div class="detail-line">Backend API Integration: <strong>${d.apiIntegration}</strong></div>
+            <div class="detail-line">Applicable Product:</div>
+            <div class="detail-wrap"><strong>${d.product}</strong></div>
+          </div>
+        `;
 
         tr.innerHTML = `
           <td>${infoHtml}</td>
