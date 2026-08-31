@@ -13,7 +13,7 @@
       flex-wrap: wrap;
       gap: 12px;
       margin-bottom: 12px;
-      max-width: 763px;
+      width: 100%;
     }
     .filter-row1, .filter-row2 {
       flex: 0 0 auto;
@@ -59,7 +59,9 @@
 
     .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
 
-    .table-container-pc table { table-layout: fixed; width: 763px; border-collapse: collapse; }
+    /* Fluid width — fills whatever space the webframe actually gives it,
+       instead of a fixed pixel value that only fits one screen size. */
+    .table-container-pc table { table-layout: fixed; width: 100%; border-collapse: collapse; }
     .table-container-pc th { 
       background: #f8fafc; 
       padding: 10px 12px; 
@@ -95,24 +97,18 @@
     }
     .sub-text-pc { font-size: 9px; color: #64748b; }
 
-    /* 6 columns: 1 Info (Region/Country/Currency/Type), 2 Payment
-       Channel, 3 Channel ID, 4 Min, 5 Max, 6 Detail */
-    .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 220px; }
-    .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 85px; }
-    .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 75px; }
-    .table-container-pc th:nth-child(4), .table-container-pc td:nth-child(4) { width: 85px; }
-    .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 85px; }
-    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 218px; }
+    /* 6 columns, widths as % of total (proportional to the previous
+       763px layout: 220/85/75/85/85/218 → 28.8/11.1/9.8/11.1/11.1/28.1) */
+    .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 28.8%; }
+    .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 11.1%; }
+    .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 9.8%; }
+    .table-container-pc th:nth-child(4), .table-container-pc td:nth-child(4) { width: 11.1%; }
+    .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 11.1%; }
+    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 28.1%; }
 
-    /* Info column: each line stays on one line (labels/values are
-       short and predictable, e.g. "Region: Asia"). */
     .info-col { text-align: left; }
     .info-col div { white-space: nowrap; font-size: 10px; }
 
-    /* Detail column: most lines stay on one line, but the Applicable
-       Product value can genuinely be long ("[Codashop][Codapay]
-       [Webstore]"), so it's allowed to wrap onto a second line only
-       when it doesn't fit — not forced onto its own line always. */
     .detail-col { text-align: left; }
     .detail-col div { font-size: 10px; }
     .detail-col .detail-line { white-space: nowrap; }
