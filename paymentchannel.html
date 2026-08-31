@@ -159,4 +159,123 @@
             field = '';
           } else if (char === '\r') {
             // ignore
-          } else if
+          } else if (char === '\n') {
+            row.push(field.trim());
+            rows.push(row);
+            row = [];
+            field = '';
+          } else {
+            field += char;
+          }
+        }
+      }
+      if (field.length > 0 || row.length > 0) {
+        row.push(field.trim());
+        rows.push(row);
+      }
+
+      return rows.slice(1).filter(cols => !(cols.length === 1 && cols[0] === '')).map(cols => {
+        return {
+          region: cols[0] || '-',
+          country: cols[1] || '-',
+          currency: cols[2] || '-',
+          channel: cols[3] || '-',
+          type: cols[4] || '-',
+          channelId: cols[5] || '-',
+          min: formatNumber(cols[6]),
+          max: formatNumber(cols[7]),
+          pricePointType: cols[8] || '-',
+          decimalSupport: cols[9] || '-',
+          apiIntegration: cols[10] || '-',
+          product: (cols[11] || '-').replace(/\s+/g, ' ').trim()
+        };
+      });
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch(CSV_URL);
+        if (!res.ok) throw new Error('Network error');
+        const text = await res.text();
+        rawData = parseCSV(text);
+        populateDropdowns();
+        renderTable();
+      } catch (err) {
+        document.getElementById('countDisplay').innerText = 'Unable to load payment channels. Please ensure the Google Sheet is published to web.';
+      }
+    }
+
+    function populateDropdowns() {
+      const regions = [...new Set(rawData.map(d => d.region))].filter(v => v !== '-').sort();
+      const countries = [...new Set(rawData.map(d => d.country))].filter(v => v !== '-').sort();
+      const types = [...new Set(rawData.map(d => d.type))].filter(v => v !== '-').sort();
+
+      fillSelect('regionSelect', regions, 'All Regions');
+      fillSelect('countrySelect', countries, 'All Countries');
+      fillSelect('typeSelect', types, 'All Types');
+    }
+
+    function fillSelect(id, items, defaultText) {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="">${defaultText}</option>` + items.map(i => `<option value="${i}">${i}</option>`).join('');
+    }
+
+    function renderTable() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const region = document.getElementById('regionSelect').value;
+      const country = document.getElementById('countrySelect').value;
+      const type = document.getElementById('typeSelect').value;
+      const product = document.getElementById('productSelect').value;
+
+      const filtered = rawData.filter(d => {
+        const matchSearch = !search ||
+          d.channel.toLowerCase().includes(search) ||
+          d.country.toLowerCase().includes(search) ||
+          d.channelId.toLowerCase().includes(search) ||
+          d.product.toLowerCase().includes(search);
+        const matchRegion = !region || d.region === region;
+        const matchCountry = !country || d.country === country;
+        const matchType = !type || d.type === type;
+        const matchProduct = !product || d.product.toLowerCase().includes(product.toLowerCase());
+        return matchSearch && matchRegion && matchCountry && matchType && matchProduct;
+      });
+
+      document.getElementById('countDisplay').innerText = `Showing ${filtered.length} channel(s)`;
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 20px;">No payment channels matched your selection.</td></tr>';
+        return;
+      }
+
+      filtered.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${d.region}</td>
+          <td>${d.country}</td>
+          <td>${d.currency}</td>
+          <td class="channel-name-pc">${d.channel}</td>
+          <td><span class="badge-pc">${d.type}</span></td>
+          <td><code>${d.channelId}</code></td>
+          <td>${d.min}</td>
+          <td>${d.max}</td>
+          <td>${d.pricePointType}</td>
+          <td>${d.decimalSupport}</td>
+          <td>${d.apiIntegration}</td>
+          <td>${d.product}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('regionSelect').onchange = renderTable;
+    document.getElementById('countrySelect').onchange = renderTable;
+    document.getElementById('typeSelect').onchange = renderTable;
+    document.getElementById('productSelect').onchange = renderTable;
+    document.getElementById('searchInput').oninput = renderTable;
+
+    loadData();
+  </script>
+</body>
+</html>
