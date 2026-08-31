@@ -258,4 +258,33 @@
           <div class="detail-row">
             <span class="detail-value">${d.pricePointType}</span><span class="detail-label">Price Point Type</span>
             <span class="detail-value">${d.decimalSupport}</span><span class="detail-label">Decimal Support</span>
-            <span
+            <span class="detail-value">${d.apiIntegration}</span><span class="detail-label">Backend API Integration</span>
+            <span class="detail-value">${d.product}</span><span class="detail-label">Applicable Product</span>
+          </div>
+        `;
+
+        tr.innerHTML = `
+          <td>${d.region}</td>
+          <td>${d.country}</td>
+          <td>${d.currency}</td>
+          <td class="channel-name-pc">${d.channel}</td>
+          <td><span class="badge-pc">${d.type}</span></td>
+          <td><code>${d.channelId}</code></td>
+          <td>${d.min}</td>
+          <td>${d.max}</td>
+          <td>${detailHtml}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('regionSelect').onchange = renderTable;
+    document.getElementById('countrySelect').onchange = renderTable;
+    document.getElementById('typeSelect').onchange = renderTable;
+    document.getElementById('productSelect').onchange = renderTable;
+    document.getElementById('searchInput').oninput = renderTable;
+
+    loadData();
+  </script>
+</body>
+</html>
