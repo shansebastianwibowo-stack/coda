@@ -296,23 +296,23 @@
       filtered.forEach(d => {
         const tr = document.createElement('tr');
 
-        const infoHtml = `
-          <div class="info-col">
-            <div>Region: ${d.region}</div>
-            <div>Country: ${d.country}</div>
-            <div>Currency: ${d.currency}</div>
-            <div>Type: ${d.type}</div>
-          </div>
-        `;
+const infoHtml = `
+  <div class="info-col">
+    <div>Region: <strong>${d.region}</strong></div>
+    <div>Country: <strong>${d.country}</strong></div>
+    <div>Currency: <strong>${d.currency}</strong></div>
+    <div>Type: <strong>${d.type}</strong></div>
+  </div>
+`;
 
-        const detailHtml = `
-          <div class="info-col">
-            <div>Price Point Type: ${d.pricePointType}</div>
-            <div>Decimal Support: ${d.decimalSupport}</div>
-            <div>Backend API Integration: ${d.apiIntegration}</div>
-            <div>Applicable Product: ${d.product}</div>
-          </div>
-        `;
+const detailHtml = `
+  <div class="info-col">
+    <div>Price Point Type: <strong>${d.pricePointType}</strong></div>
+    <div>Decimal Support: <strong>${d.decimalSupport}</strong></div>
+    <div>Backend API Integration: <strong>${d.apiIntegration}</strong></div>
+    <div>Applicable Product: <strong>${d.product}</strong></div>
+  </div>
+`;
 
         tr.innerHTML = `
           <td>${infoHtml}</td>
