@@ -13,7 +13,7 @@
       flex-wrap: wrap;
       gap: 12px;
       margin-bottom: 12px;
-      width: 100%;
+      max-width: 763px;
     }
     .filter-row1, .filter-row2 {
       flex: 0 0 auto;
@@ -59,7 +59,7 @@
 
     .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
 
-    .table-container-pc table { table-layout: fixed; width: 100%; border-collapse: collapse; }
+    .table-container-pc table { table-layout: fixed; width: 763px; border-collapse: collapse; }
     .table-container-pc th { 
       background: #f8fafc; 
       padding: 10px 12px; 
@@ -95,12 +95,13 @@
     }
     .sub-text-pc { font-size: 9px; color: #64748b; }
 
-    .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 28.8%; }
-    .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 11.1%; }
-    .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 9.8%; }
-    .table-container-pc th:nth-child(4), .table-container-pc td:nth-child(4) { width: 11.1%; }
-    .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 11.1%; }
-    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 28.1%; }
+    /* Individual fixed pixel widths, per column */
+    .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 220px; }
+    .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 85px; }
+    .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 75px; }
+    .table-container-pc th:nth-child(4), .table-container-pc td:nth-child(4) { width: 85px; }
+    .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 85px; }
+    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 218px; }
 
     .info-col { text-align: left; }
     .info-col div { white-space: nowrap; font-size: 10px; }
@@ -278,16 +279,6 @@
       sel.innerHTML = `<option value="">${defaultText}</option>` + items.map(i => `<option value="${i}">${i}</option>`).join('');
     }
 
-    function reportHeightToParent() {
-      const height = document.body.scrollHeight;
-      window.parent.postMessage({
-        action: {
-          action: '@webframe.resize',
-          height: height,
-        },
-      }, '*');
-    }
-
     function renderTable() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const region = document.getElementById('regionSelect').value;
@@ -314,7 +305,6 @@
 
       if (filtered.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">No payment channels matched your selection.</td></tr>';
-        reportHeightToParent();
         return;
       }
 
@@ -350,8 +340,6 @@
         `;
         tbody.appendChild(tr);
       });
-
-      setTimeout(reportHeightToParent, 50);
     }
 
     document.getElementById('regionSelect').onchange = renderTable;
@@ -361,8 +349,6 @@
     document.getElementById('searchInput').oninput = renderTable;
 
     loadData();
-
-    setTimeout(reportHeightToParent, 500);
   </script>
 </body>
 </html>
