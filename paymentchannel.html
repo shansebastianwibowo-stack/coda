@@ -8,9 +8,6 @@
     * { box-sizing: border-box; }
     body { margin: 0; padding: 12px; width: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background: #ffffff; }
 
-    /* Filter grid — two explicit rows via flex-wrap, capped to match
-       the table's width, so it never stretches wide or overlaps in a
-       narrow frame like GitBook's webframe. */
     .filter-grid-pc {
       display: flex;
       flex-wrap: wrap;
@@ -29,8 +26,23 @@
     }
 
     .filter-group-pc { display: flex; flex-direction: column; gap: 4px; }
-    .filter-group-pc label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-    .filter-group-pc input, .filter-group-pc select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; background-color: #fff; width: auto; }
+    .filter-group-pc label { 
+      font-size: 10px; 
+      font-weight: 700; 
+      color: #64748b; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px; 
+    }
+    .filter-group-pc input, 
+    .filter-group-pc select { 
+      font-size: 12px;
+      padding: 6px 10px; 
+      border: 1px solid #cbd5e1; 
+      border-radius: 6px; 
+      outline: none; 
+      background-color: #fff; 
+      width: auto; 
+    }
 
     #searchInput   { width: 260px; }
     #regionSelect  { width: 160px; }
@@ -38,24 +50,51 @@
     #typeSelect    { width: 200px; }
     #productSelect { width: 160px; }
 
-    .meta-info-pc { font-size: 13px; color: #64748b; margin-bottom: 12px; font-weight: 500; }
+    .meta-info-pc { 
+      font-size: 12px; 
+      color: #64748b; 
+      margin-bottom: 12px; 
+      font-weight: 500; 
+    }
 
     .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
 
-    .table-container-pc table { table-layout: fixed; width: 900px; border-collapse: collapse; font-size: 13px; }
-    .table-container-pc th { background: #f8fafc; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #475569; }
-    .table-container-pc td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+    .table-container-pc table { table-layout: fixed; width: 900px; border-collapse: collapse; }
+    .table-container-pc th { 
+      background: #f8fafc; 
+      padding: 10px 12px; 
+      border-bottom: 2px solid #e2e8f0; 
+      font-weight: 600; 
+      color: #475569; 
+      font-size: 12px;
+    }
+    .table-container-pc td { 
+      padding: 10px 12px; 
+      border-bottom: 1px solid #f1f5f9; 
+      color: #334155; 
+      font-size: 10px;
+    }
 
     .table-container-pc th, .table-container-pc td { text-align: center; vertical-align: middle; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; }
 
     .table-container-pc tr:hover { background: #f8fafc; }
 
-    .badge-pc { display: inline-block; padding: 2px 6px; border-radius: 12px; font-size: 11px; font-weight: 600; background-color: #e2e8f0; color: #334155; }
-    .channel-name-pc { font-weight: 600; color: #0f172a; }
-    .sub-text-pc { font-size: 11px; color: #64748b; }
+    .badge-pc { 
+      display: inline-block; 
+      padding: 2px 6px; 
+      border-radius: 12px; 
+      font-size: 9px; 
+      font-weight: 600; 
+      background-color: #e2e8f0; 
+      color: #334155; 
+    }
+    .channel-name-pc { 
+      font-weight: 600; 
+      color: #0f172a; 
+      font-size: 10px;
+    }
+    .sub-text-pc { font-size: 9px; color: #64748b; }
 
-    /* 6 columns: 1 Info (Region/Country/Currency/Type), 2 Payment
-       Channel, 3 Channel ID, 4 Min, 5 Max, 6 Detail */
     .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 180px; }
     .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 110px; }
     .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 80px; }
@@ -63,19 +102,17 @@
     .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 90px; }
     .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 350px; }
 
-    /* "Info" column: Label: Value stacked lines, left-aligned */
     .info-col { text-align: left; }
-    .info-col div { white-space: nowrap; }
+    .info-col div { white-space: nowrap; font-size: 10px; }
 
-    /* "Detail" column: value/label pairs in a 2-column grid */
     .detail-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 4px 10px;
       text-align: left;
     }
-    .detail-value { text-align: right; color: #334155; font-weight: 500; }
-    .detail-label { text-align: left; color: #64748b; font-size: 12px; }
+    .detail-label { text-align: left; color: #64748b; font-size: 9px; }
+    .detail-value { text-align: left; color: #334155; font-weight: 500; font-size: 10px; }
   </style>
 </head>
 <body>
@@ -275,10 +312,10 @@
 
         const detailHtml = `
           <div class="detail-row">
-            <span class="detail-value">${d.pricePointType}</span><span class="detail-label">Price Point Type</span>
-            <span class="detail-value">${d.decimalSupport}</span><span class="detail-label">Decimal Support</span>
-            <span class="detail-value">${d.apiIntegration}</span><span class="detail-label">Backend API Integration</span>
-            <span class="detail-value">${d.product}</span><span class="detail-label">Applicable Product</span>
+            <span class="detail-label">Price Point Type:</span><span class="detail-value">${d.pricePointType}</span>
+            <span class="detail-label">Decimal Support:</span><span class="detail-value">${d.decimalSupport}</span>
+            <span class="detail-label">Backend API Integration:</span><span class="detail-value">${d.apiIntegration}</span>
+            <span class="detail-label">Applicable Product:</span><span class="detail-value">${d.product}</span>
           </div>
         `;
 
