@@ -8,8 +8,6 @@
     * { box-sizing: border-box; }
     body { margin: 0; padding: 12px; width: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background: #ffffff; }
 
-    /* Filter Grid — content-sized columns, explicit widths per field,
-       capped to match the table's total width. */
     .filter-grid-pc { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, max-content)); gap: 12px; margin-bottom: 12px; max-width: 1397px; }
     .filter-group-pc { display: flex; flex-direction: column; gap: 4px; }
     .filter-group-pc label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -25,13 +23,10 @@
 
     .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
 
-    /* Fixed layout so explicit column widths are respected, with
-       wrapping enabled so long values move to a new line. */
-    .table-container-pc table { table-layout: fixed; width: 1397px; border-collapse: collapse; font-size: 13px; }
+    .table-container-pc table { table-layout: fixed; width: 1040px; border-collapse: collapse; font-size: 13px; }
     .table-container-pc th { background: #f8fafc; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #475569; }
     .table-container-pc td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
 
-    /* Center everything, both horizontally and vertically, with wrapping */
     .table-container-pc th, .table-container-pc td { text-align: center; vertical-align: middle; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; }
 
     .table-container-pc tr:hover { background: #f8fafc; }
@@ -40,21 +35,37 @@
     .channel-name-pc { font-weight: 600; color: #0f172a; }
     .sub-text-pc { font-size: 11px; color: #64748b; }
 
-    /* Per-column widths: 1 Region, 2 Country, 3 Currency, 4 Payment
-       Channel, 5 Type, 6 Channel ID, 7 Min, 8 Max, 9 Price Point Type,
-       10 Decimal Support, 11 Backend API Integration, 12 Applicable Product */
-    .table-container-pc th:nth-child(1),  .table-container-pc td:nth-child(1)  { width: 92px; }
-    .table-container-pc th:nth-child(2),  .table-container-pc td:nth-child(2)  { width: 140px; }
-    .table-container-pc th:nth-child(3),  .table-container-pc td:nth-child(3)  { width: 88px; }
-    .table-container-pc th:nth-child(4),  .table-container-pc td:nth-child(4)  { width: 110px; }
-    .table-container-pc th:nth-child(5),  .table-container-pc td:nth-child(5)  { width: 160px; }
-    .table-container-pc th:nth-child(6),  .table-container-pc td:nth-child(6)  { width: 80px; }
-    .table-container-pc th:nth-child(7),  .table-container-pc td:nth-child(7)  { width: 140px; }
-    .table-container-pc th:nth-child(8),  .table-container-pc td:nth-child(8)  { width: 140px; }
-    .table-container-pc th:nth-child(9),  .table-container-pc td:nth-child(9)  { width: 105px; }
-    .table-container-pc th:nth-child(10), .table-container-pc td:nth-child(10) { width: 135px; }
-    .table-container-pc th:nth-child(11), .table-container-pc td:nth-child(11) { width: 112px; }
-    .table-container-pc th:nth-child(12), .table-container-pc td:nth-child(12) { width: 95px; }
+    /* 9 columns now: 1 Region, 2 Country, 3 Currency, 4 Payment Channel,
+       5 Type, 6 Channel ID, 7 Min, 8 Max, 9 Detail */
+    .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 92px; }
+    .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 140px; }
+    .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 88px; }
+    .table-container-pc th:nth-child(4), .table-container-pc td:nth-child(4) { width: 110px; }
+    .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 160px; }
+    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 80px; }
+    .table-container-pc th:nth-child(7), .table-container-pc td:nth-child(7) { width: 140px; }
+    .table-container-pc th:nth-child(8), .table-container-pc td:nth-child(8) { width: 140px; }
+    .table-container-pc th:nth-child(9), .table-container-pc td:nth-child(9) { width: 350px; } /* Detail */
+
+    /* Detail column: label:value pairs stacked vertically, value on
+       the left (right-aligned within its half), label on the right
+       (left-aligned), matching a compact key-value layout. */
+    .detail-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 10px;
+      text-align: left;
+    }
+    .detail-value {
+      text-align: right;
+      color: #334155;
+      font-weight: 500;
+    }
+    .detail-label {
+      text-align: left;
+      color: #64748b;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
@@ -101,10 +112,7 @@
           <th>Channel ID</th>
           <th>Min</th>
           <th>Max</th>
-          <th>Price Point Type</th>
-          <th>Decimal Support</th>
-          <th>Backend API Integration</th>
-          <th>Applicable Product</th>
+          <th>Detail</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -125,12 +133,6 @@
     }
 
     function parseCSV(text) {
-      // Full CSV parser — treats the entire text as ONE stream, not
-      // pre-split by newline. A quoted field CAN legally contain a real
-      // newline (e.g. a Google Sheets cell with multiple lines, like
-      // "Codashop\nCodapay\nWebstore"). Splitting by "\n" first — like
-      // the old version did — breaks that single row into multiple
-      // broken rows and desyncs every column after it.
       const rows = [];
       let row = [];
       let field = '';
@@ -245,37 +247,15 @@
       tbody.innerHTML = '';
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 20px;">No payment channels matched your selection.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px;">No payment channels matched your selection.</td></tr>';
         return;
       }
 
       filtered.forEach(d => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${d.region}</td>
-          <td>${d.country}</td>
-          <td>${d.currency}</td>
-          <td class="channel-name-pc">${d.channel}</td>
-          <td><span class="badge-pc">${d.type}</span></td>
-          <td><code>${d.channelId}</code></td>
-          <td>${d.min}</td>
-          <td>${d.max}</td>
-          <td>${d.pricePointType}</td>
-          <td>${d.decimalSupport}</td>
-          <td>${d.apiIntegration}</td>
-          <td>${d.product}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
 
-    document.getElementById('regionSelect').onchange = renderTable;
-    document.getElementById('countrySelect').onchange = renderTable;
-    document.getElementById('typeSelect').onchange = renderTable;
-    document.getElementById('productSelect').onchange = renderTable;
-    document.getElementById('searchInput').oninput = renderTable;
-
-    loadData();
-  </script>
-</body>
-</html>
+        const detailHtml = `
+          <div class="detail-row">
+            <span class="detail-value">${d.pricePointType}</span><span class="detail-label">Price Point Type</span>
+            <span class="detail-value">${d.decimalSupport}</span><span class="detail-label">Decimal Support</span>
+            <span
