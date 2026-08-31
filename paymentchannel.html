@@ -236,19 +236,19 @@
       });
     }
 
-    async function loadData() {
-      try {
-        const res = await fetch(CSV_URL);
-        if (!res.ok) throw new Error('Network error');
-        const text = await res.text();
-        rawData = parseCSV(text);
-        populateDropdowns();
-        renderTable();
-      } catch (err) {
-        document.getElementById('countDisplay').innerText = 'Unable to load payment channels. Please ensure the Google Sheet is published to web.';
-      }
-    }
-
+async function loadData() {
+  try {
+    const res = await fetch(CSV_URL);
+    if (!res.ok) throw new Error('Network error');
+    const text = await res.text();
+    rawData = parseCSV(text);
+    populateDropdowns();
+    applyURLPresets();   // <-- new line
+    renderTable();
+  } catch (err) {
+    document.getElementById('countDisplay').innerText = 'Unable to load payment channels. Please ensure the Google Sheet is published to web.';
+  }
+}
     function populateDropdowns() {
       const regions = [...new Set(rawData.map(d => d.region))].filter(v => v !== '-').sort();
       const countries = [...new Set(rawData.map(d => d.country))].filter(v => v !== '-').sort();
@@ -258,6 +258,18 @@
       fillSelect('countrySelect', countries, 'All Countries');
       fillSelect('typeSelect', types, 'All Types');
     }
+    function applyURLPresets() {
+  const params = new URLSearchParams(window.location.search);
+  const presetProduct = params.get('product');
+  if (presetProduct) {
+    const sel = document.getElementById('productSelect');
+    // Only set it if that value actually exists as an option
+    const validOptions = Array.from(sel.options).map(o => o.value);
+    if (validOptions.includes(presetProduct)) {
+      sel.value = presetProduct;
+    }
+  }
+}
 
     function fillSelect(id, items, defaultText) {
       const sel = document.getElementById(id);
