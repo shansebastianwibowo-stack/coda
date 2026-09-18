@@ -34,7 +34,7 @@
 
     .gs-pills {
       display: grid;
-      grid-template-columns: repeat(5, 120px);
+      grid-template-columns: repeat(5, 1fr);
       gap: 12px;
       margin-bottom: 4px;
     }
@@ -59,7 +59,7 @@
 
     .gs-connect-1 {
       display: grid;
-      grid-template-columns: repeat(5, 120px);
+      grid-template-columns: repeat(5, 1fr);
       gap: 12px;
       height: 14px;
       margin-bottom: 6px;
@@ -92,12 +92,12 @@
 
     .gs-row-top {
       display: grid;
-      grid-template-columns: repeat(5, 120px);
+      grid-template-columns: repeat(5, 1fr);
       gap: 12px;
     }
     .gs-card-top-slot {
-      width: 120px;
-      height: 120px;
+      width: 100%;
+      aspect-ratio: 1 / 1;
       border: 1px dashed #cbd5e1;
       border-radius: 10px 10px 0 0;
       display: flex;
@@ -107,6 +107,7 @@
       color: #94a3b8;
       text-align: center;
       background: #fafafa;
+      overflow: hidden;
     }
     .gs-card-top-slot.standalone {
       border-radius: 10px;
@@ -114,13 +115,13 @@
 
     .gs-row-bottom {
       display: grid;
-      grid-template-columns: 120px repeat(4, 120px);
+      grid-template-columns: repeat(5, 1fr);
       gap: 12px;
       margin-top: 0;
     }
     .gs-row-bottom .spacer { grid-column: 1; }
     .gs-card-bottom-slot {
-      width: 120px;
+      width: 100%;
       height: 85px;
       border: 1px dashed rgba(0,0,0,0.15);
       border-top: none;
@@ -155,28 +156,29 @@
     .gs-mini-btn:hover { opacity: 0.7; }
 
     .gs-connect-2 {
-      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
       height: 18px;
-      width: 516px;
-      margin-left: 132px;
+      position: relative;
     }
     .gs-connect-2 .tick {
-      position: absolute;
-      top: 0;
-      width: 1px;
+      position: relative;
       height: 8px;
+      justify-self: center;
+      width: 1px;
       background: #cbd5e1;
     }
-    .gs-connect-2 .tick.b1 { left: 60px; }
-    .gs-connect-2 .tick.b2 { left: 192px; }
-    .gs-connect-2 .tick.b3 { left: 324px; }
-    .gs-connect-2 .tick.b4 { left: 456px; }
+    .gs-connect-2 .tick.b1 { grid-column: 2; }
+    .gs-connect-2 .tick.b2 { grid-column: 3; }
+    .gs-connect-2 .tick.b3 { grid-column: 4; }
+    .gs-connect-2 .tick.b4 { grid-column: 5; }
     .gs-connect-2::before {
       content: "";
       position: absolute;
       top: 8px;
-      left: 60px;
-      right: 60px;
+      left: 30%;
+      right: 10%;
       height: 1px;
       background: #cbd5e1;
     }
@@ -184,20 +186,19 @@
       content: "";
       position: absolute;
       top: 8px;
-      left: 50%;
+      left: 60%;
       width: 1px;
       height: 10px;
       background: #cbd5e1;
     }
 
     .gs-final-wrap {
-      display: flex;
-      justify-content: center;
-      margin-left: 132px;
-      width: 516px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
     }
     .gs-final-card {
-      width: 425px;
+      grid-column: 2 / 6;
       height: 75px;
       border-radius: 8px;
       overflow: hidden;
@@ -245,11 +246,11 @@
     </div>
 
     <div class="gs-row-top">
-      <div class="gs-card-top-slot standalone"><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SXAME0T9ARVCSCE2R897YJ" style="width:120px;height:120px;object-fit:cover;border-radius:inherit;"></div>
-      <div class="gs-card-top-slot"><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWWVZ7D0PSPCJB36JGNCBQ" style="width:120px;height:120px;object-fit:cover;border-radius:inherit;"></div>
-      <div class="gs-card-top-slot"><br><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWX0H1BCCSEEZ41Z9TRVZ0" style="width:120px;height:120px;object-fit:cover;border-radius:inherit;"></div>
-      <div class="gs-card-top-slot"><br><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWWXNRJN2RPVTPZ8MZACVW" style="width:120px;height:120px;object-fit:cover;border-radius:inherit;"></div>
-      <div class="gs-card-top-slot"><br><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWWZ8ASFGRDBTGKW30HDYF" style="width:120px;height:120px;object-fit:cover;border-radius:inherit;"></div>
+      <div class="gs-card-top-slot standalone"><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SXAME0T9ARVCSCE2R897YJ" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
+      <div class="gs-card-top-slot"><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWWVZ7D0PSPCJB36JGNCBQ" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
+      <div class="gs-card-top-slot"><br><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWX0H1BCCSEEZ41Z9TRVZ0" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
+      <div class="gs-card-top-slot"><br><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWWXNRJN2RPVTPZ8MZACVW" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
+      <div class="gs-card-top-slot"><br><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWWZ8ASFGRDBTGKW30HDYF" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
     </div>
 
     <div class="gs-row-bottom">
