@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coda's Growth Suite and Solutions</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #ffffff;
+      color: #0f172a;
+    }
+
+    .gs-frame {
+      max-width: 700px;
+    }
+
+    .gs-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      margin: 0 0 6px;
+    }
+    .gs-subtitle {
+      font-size: 13px;
+      color: #334155;
+      margin: 0 0 20px;
+    }
+    .gs-subtitle b { font-weight: 700; color: #0f172a; }
+
+    .gs-pills {
+      display: grid;
+      grid-template-columns: repeat(5, 120px);
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+    .gs-pill {
+      display: inline-block;
+      border: 1px solid #94a3b8;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 9px;
+      font-weight: 700;
+      font-family: ui-monospace, "SF Mono", "Courier New", monospace;
+      letter-spacing: 0.4px;
+      color: #475569;
+      background: #ffffff;
+      text-align: center;
+      white-space: nowrap;
+      justify-self: start;
+    }
+    .gs-pill.app   { grid-column: 1; justify-self: center; }
+    .gs-pill.infra { grid-column: 2; justify-self: center; }
+    .gs-pill.ooa   { grid-column: 3 / 6; justify-self: center; width: fit-content; }
+
+    .gs-connect-1 {
+      display: grid;
+      grid-template-columns: repeat(5, 120px);
+      gap: 12px;
+      height: 14px;
+      margin-bottom: 6px;
+    }
+    .gs-connect-1 .line-app   { grid-column: 1; position: relative; }
+    .gs-connect-1 .line-infra { grid-column: 2; position: relative; }
+    .gs-connect-1 .line-ooa   { grid-column: 3 / 6; position: relative; }
+
+    .vline {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 1px;
+      height: 14px;
+      background: #cbd5e1;
+    }
+    .gs-connect-1 .line-ooa::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: calc(16.6% - 6px);
+      right: calc(16.6% - 6px);
+      height: 1px;
+      background: #cbd5e1;
+    }
+    .gs-connect-1 .line-ooa .tick { position: absolute; top: 0; width: 1px; height: 14px; background: #cbd5e1; }
+    .gs-connect-1 .line-ooa .t1 { left: calc(16.6% - 6px); }
+    .gs-connect-1 .line-ooa .t2 { left: 50%; }
+    .gs-connect-1 .line-ooa .t3 { right: calc(16.6% - 6px); }
+
+    .gs-row-top {
+      display: grid;
+      grid-template-columns: repeat(5, 120px);
+      gap: 12px;
+    }
+    .gs-card-top-slot {
+      width: 120px;
+      height: 120px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px 10px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #94a3b8;
+      text-align: center;
+      background: #fafafa;
+    }
+    .gs-card-top-slot.standalone {
+      border-radius: 10px;
+    }
+
+    .gs-row-bottom {
+      display: grid;
+      grid-template-columns: 120px repeat(4, 120px);
+      gap: 12px;
+      margin-top: 0;
+    }
+    .gs-row-bottom .spacer { grid-column: 1; }
+    .gs-card-bottom-slot {
+      width: 120px;
+      height: 85px;
+      border: 1px dashed rgba(0,0,0,0.15);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-size: 9px;
+      color: #64748b;
+      text-align: center;
+      padding: 4px;
+    }
+    .gs-card-bottom-slot.c1 { background: #f8f9eb; }
+    .gs-card-bottom-slot.c2 { background: #abf7c0; }
+    .gs-card-bottom-slot.c3 { background: #ffe7ca; }
+    .gs-card-bottom-slot.c4 { background: #ffc0e5; }
+
+    .gs-mini-btn {
+      display: inline-block;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.25);
+      border-radius: 999px;
+      padding: 2px 12px;
+      font-size: 9px;
+      font-weight: 700;
+      color: #334155;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .gs-mini-btn:hover { opacity: 0.7; }
+
+    .gs-connect-2 {
+      position: relative;
+      height: 18px;
+      width: 516px;
+      margin-left: 132px;
+    }
+    .gs-connect-2 .tick {
+      position: absolute;
+      top: 0;
+      width: 1px;
+      height: 8px;
+      background: #cbd5e1;
+    }
+    .gs-connect-2 .tick.b1 { left: 60px; }
+    .gs-connect-2 .tick.b2 { left: 192px; }
+    .gs-connect-2 .tick.b3 { left: 324px; }
+    .gs-connect-2 .tick.b4 { left: 456px; }
+    .gs-connect-2::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 60px;
+      right: 60px;
+      height: 1px;
+      background: #cbd5e1;
+    }
+    .gs-connect-2::after {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      width: 1px;
+      height: 10px;
+      background: #cbd5e1;
+    }
+
+    .gs-final-wrap {
+      display: flex;
+      justify-content: center;
+      margin-left: 132px;
+      width: 516px;
+    }
+    .gs-final-card {
+      width: 425px;
+      height: 75px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .gs-final-header {
+      height: 30px;
+      background: #5a5a4f;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+    .gs-final-body {
+      height: 45px;
+      background: #e9e9e9;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="gs-frame">
+    <h1 class="gs-title">CODA'S GROWTH SUITE AND SOLUTIONS</h1>
+    <p class="gs-subtitle">The <b>most complete solution to realize out-of-app profitability</b> for our partners &amp; publishers</p>
+
+    <div class="gs-pills">
+      <span class="gs-pill app">APP CHANNELS</span>
+      <span class="gs-pill infra">INFRASTRUCTURE</span>
+      <span class="gs-pill ooa">OUT-OF-APP-CHANNELS</span>
+    </div>
+
+    <div class="gs-connect-1">
+      <div class="line-app"><div class="vline"></div></div>
+      <div class="line-infra"><div class="vline"></div></div>
+      <div class="line-ooa">
+        <div class="tick t1"></div>
+        <div class="tick t2"></div>
+        <div class="tick t3"></div>
+      </div>
+    </div>
+
+    <div class="gs-row-top">
+      <div class="gs-card-top-slot standalone"><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SXAME0T9ARVCSCE2R897YJ" style="width:120px;height:120px;object-fit:cover;border-radius:inherit;"></div>
+      <div class="gs-card-top-slot"><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWWVZ7D0PSPCJB36JGNCBQ" style="width:120px;height:120px;object-fit:cover;border-radius:inherit;"></div>
+      <div class="gs-card-top-slot"><br><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWX0H1BCCSEEZ41Z9TRVZ0" style="width:120px;height:120px;object-fit:cover;border-radius:inherit;"></div>
+      <div class="gs-card-top-slot"><br><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWWXNRJN2RPVTPZ8MZACVW" style="width:120px;height:120px;object-fit:cover;border-radius:inherit;"></div>
+      <div class="gs-card-top-slot"><br><img src="https://bopt.zendesk.com/hc/theming_assets/01M2SWWZ8ASFGRDBTGKW30HDYF" style="width:120px;height:120px;object-fit:cover;border-radius:inherit;"></div>
+    </div>
+
+    <div class="gs-row-bottom">
+      <div class="spacer"></div>
+      <div class="gs-card-bottom-slot c1">Power app link-out pay &amp; your own D2C webstore pay in 80+ markets with full MoR support<a class="gs-mini-btn" href="https://docs.coda.co/codapay/overview" data-needs-real-url="codapay">Explore</a></div>
+      <div class="gs-card-bottom-slot c2">Build &amp; launch your D2C webstore instantly with promo,growth &amp; loyalty features to keep converting out-of-app<a class="gs-mini-btn" href="https://docs.coda.co/coda-webstore/getting-started" data-needs-real-url="webstore">Explore</a></div>
+      <div class="gs-card-bottom-slot c3">Sell and scale with market-leading digital content platforms, owned &amp; operated by Coda for max trust<a class="gs-mini-btn" href="https://docs.coda.co/codashop-and-distribution/overview" data-needs-real-url="codashop">Explore</a></div>
+      <div class="gs-card-bottom-slot c4"><br>Extend your reach with 100s of trusted, locally leading distribution partners, managed by Coda</div>
+    </div>
+
+    <div class="gs-connect-2">
+      <div class="tick b1"></div>
+      <div class="tick b2"></div>
+      <div class="tick b3"></div>
+      <div class="tick b4"></div>
+    </div>
+
+    <div class="gs-final-wrap">
+      <div class="gs-final-card">
+        <div class="gs-final-header"><b>Marketing Services</b></div>
+        <div class="gs-final-body"><center>Access Coda-owned &amp; payment- &amp; distribution-partner owned marketing channels, performance marketing channels * SEO/GEO services to attract customers to convert where you want them to</center></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
