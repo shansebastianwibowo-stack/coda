@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payout Channels Directory</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 16px;
+      width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #f8fafc;
+      font-size: 12px;
+    }
+
+    .filter-grid-pc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      max-width: 750px;
+    }
+    .filter-group-pc { display: flex; flex-direction: column; gap: 4px; }
+    .filter-group-pc label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .filter-group-pc input,
+    .filter-group-pc select {
+      font-size: 10px;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      background-color: #fff;
+      width: auto;
+    }
+    #searchInput   { width: 220px; }
+    #regionSelect  { width: 160px; }
+    #countrySelect { width: 160px; }
+    #typeSelect    { width: 200px; }
+
+    .meta-info-pc {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .card-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 750px;
+    }
+
+    .pc-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .pc-card-header {
+      padding: 10px 14px;
+      background: #0f172a;
+    }
+    .pc-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .pc-kv {
+      display: flex;
+      gap: 10px;
+      padding: 12px 14px;
+      align-items: stretch;
+    }
+    .pc-category {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #fbfcfd;
+      overflow: hidden;
+    }
+    .pc-category-label {
+      background: #eef2f6;
+      color: #475569;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 5px 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .pc-category-body {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .pc-kv-item { font-size: 9px; }
+    .pc-kv-label {
+      display: block;
+      color: #64748b;
+      font-size: 9px;
+      margin-bottom: 1px;
+    }
+    .pc-kv-value {
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .pc-note {
+      font-size: 9px;
+      color: #475569;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 6px;
+      padding: 8px 10px;
+      white-space: pre-line;
+      line-height: 1.5;
+    }
+    .pc-note-label {
+      display: block;
+      font-size: 9px;
+      font-weight: 700;
+      color: #92400e;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 3px;
+    }
+
+    .pc-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+      font-size: 9px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="filter-grid-pc">
+    <div class="filter-group-pc">
+      <label for="searchInput">Search</label>
+      <input type="text" id="searchInput" placeholder="Search channel, country..." />
+    </div>
+    <div class="filter-group-pc">
+      <label for="regionSelect">Region</label>
+      <select id="regionSelect"><option value="">All Regions</option></select>
+    </div>
+    <div class="filter-group-pc">
+      <label for="countrySelect">Country</label>
+      <select id="countrySelect"><option value="">All Countries</option></select>
+    </div>
+    <div class="filter-group-pc">
+      <label for="typeSelect">Type</label>
+      <select id="typeSelect"><option value="">All Types</option></select>
+    </div>
+  </div>
+
+  <div class="meta-info-pc" id="countDisplay">Fetching payout channels...</div>
+
+  <div class="card-grid" id="cardGrid"></div>
+
+  <script>
+    const SPREADSHEET_ID = '19txcCv_OTSISqQYDQObvQSfSpMCkHj4gBjmUw6oyd-w';
+    const GID = '288873497';
+    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
+
+    let rawData = [];
+
+    function isEmptyValue(v) {
+      if (v === undefined || v === null) return true;
+      const t = String(v).trim();
+      return t === '' || t.toUpperCase() === 'N/A' || t === '-';
+    }
+
+    function displayOrDash(v) {
+      return isEmptyValue(v) ? '-' : v;
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let field = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (inQuotes) {
+          if (char === '"') {
+            if (next === '"') { field += '"'; i++; }
+            else { inQuotes = false; }
+          } else {
+            field += char;
+          }
+        } else {
+          if (char === '"') {
+            inQuotes = true;
+          } else if (char === ',') {
+            row.push(field); field = '';
+          } else if (char === '\r') {
+            // ignore
+          } else if (char === '\n') {
+            row.push(field); rows.push(row); row = []; field = '';
+          } else {
+            field += char;
+          }
+        }
+      }
+      if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+
+      return rows.slice(1).filter(cols => !(cols.length === 1 && cols[0].trim() === '')).map(cols => {
+        const get = (i) => (cols[i] !== undefined ? cols[i].trim() : '');
+        return {
+          region: get(0) || '-',
+          country: get(1) || '-',
+          currency: get(2) || '-',
+          channel: get(3) || '-',      // "Payment Channel" — also used as Type
+          minPerTx: get(4) || '-',
+          maxPerTx: get(5) || '-',
+          dailyLimit: get(6) || '-',
+          monthlyLimit: get(7) || '-',
+          otherRestrictions: get(8),
+        };
+      });
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch(CSV_URL);
+        if (!res.ok) throw new Error('Network error');
+        const text = await res.text();
+        rawData = parseCSV(text);
+        populateDropdowns();
+        renderCards();
+      } catch (err) {
+        document.getElementById('countDisplay').innerText = 'Unable to load payout channels. Please ensure the Google Sheet is published to web.';
+      }
+    }
+
+    function populateDropdowns() {
+      const regions = [...new Set(rawData.map(d => d.region))].filter(v => v !== '-').sort();
+      const countries = [...new Set(rawData.map(d => d.country))].filter(v => v !== '-').sort();
+      const types = [...new Set(rawData.map(d => d.channel))].filter(v => v !== '-').sort();
+
+      fillSelect('regionSelect', regions, 'All Regions');
+      fillSelect('countrySelect', countries, 'All Countries');
+      fillSelect('typeSelect', types, 'All Types');
+    }
+
+    function fillSelect(id, items, defaultText) {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="">${defaultText}</option>` + items.map(i => `<option value="${i}">${i}</option>`).join('');
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function buildCard(d) {
+      const otherRestrictionsValue = isEmptyValue(d.otherRestrictions) ? 'None' : d.otherRestrictions;
+
+      return `
+        <div class="pc-card">
+          <div class="pc-card-header">
+            <p class="pc-card-title">${escapeHtml(d.channel)}</p>
+          </div>
+
+          <div class="pc-kv">
+            <div class="pc-category">
+              <div class="pc-category-label">General Information</div>
+              <div class="pc-category-body">
+                <div class="pc-kv-item"><span class="pc-kv-label">Region</span><span class="pc-kv-value">${escapeHtml(d.region)}</span></div>
+                <div class="pc-kv-item"><span class="pc-kv-label">Country</span><span class="pc-kv-value">${escapeHtml(d.country)}</span></div>
+                <div class="pc-kv-item"><span class="pc-kv-label">Currency</span><span class="pc-kv-value">${escapeHtml(d.currency)}</span></div>
+                <div class="pc-kv-item"><span class="pc-kv-label">Type</span><span class="pc-kv-value">${escapeHtml(d.channel)}</span></div>
+              </div>
+            </div>
+
+            <div class="pc-category">
+              <div class="pc-category-label">Technical Information</div>
+              <div class="pc-category-body">
+                <div class="pc-kv-item"><span class="pc-kv-label">Min (Per Transaction)</span><span class="pc-kv-value">${escapeHtml(d.minPerTx)}</span></div>
+                <div class="pc-kv-item"><span class="pc-kv-label">Max (Per Transaction)</span><span class="pc-kv-value">${escapeHtml(d.maxPerTx)}</span></div>
+                <div class="pc-kv-item"><span class="pc-kv-label">Daily Limit</span><span class="pc-kv-value">${escapeHtml(d.dailyLimit)}</span></div>
+                <div class="pc-kv-item"><span class="pc-kv-label">Monthly Limit</span><span class="pc-kv-value">${escapeHtml(d.monthlyLimit)}</span></div>
+              </div>
+            </div>
+
+            <div class="pc-category">
+              <div class="pc-category-label">Additional Information</div>
+              <div class="pc-category-body">
+                <div class="pc-kv-item">
+                  <div class="pc-note">
+                    <span class="pc-note-label">Other Restrictions</span>${escapeHtml(otherRestrictionsValue)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCards() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const region = document.getElementById('regionSelect').value;
+      const country = document.getElementById('countrySelect').value;
+      const type = document.getElementById('typeSelect').value;
+
+      const filtered = rawData.filter(d => {
+        const matchSearch = !search ||
+          d.channel.toLowerCase().includes(search) ||
+          d.country.toLowerCase().includes(search) ||
+          d.region.toLowerCase().includes(search);
+        const matchRegion = !region || d.region === region;
+        const matchCountry = !country || d.country === country;
+        const matchType = !type || d.channel === type;
+        return matchSearch && matchRegion && matchCountry && matchType;
+      });
+
+      document.getElementById('countDisplay').innerText = `Showing ${filtered.length} channel(s)`;
+      const grid = document.getElementById('cardGrid');
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="pc-empty">No payout channels matched your selection.</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(buildCard).join('');
+    }
+
+    document.getElementById('regionSelect').onchange = renderCards;
+    document.getElementById('countrySelect').onchange = renderCards;
+    document.getElementById('typeSelect').onchange = renderCards;
+    document.getElementById('searchInput').oninput = renderCards;
+
+    loadData();
+  </script>
+</body>
+</html>
