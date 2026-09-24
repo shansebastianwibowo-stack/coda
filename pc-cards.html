@@ -313,6 +313,61 @@
     }
 
     .pc-codapay-only.pc-hidden { display: none; }
+    .pc-codapay-only {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .pc-codapay-only-text.pc-hidden { display: none; }
+    .pc-currency-codapay-view.pc-hidden { display: none; }
+    .pc-currency-other-view.pc-hidden { display: none; }
+
+    .pc-detail-btn {
+      display: inline-block;
+      margin-top: 3px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 9px;
+      font-weight: 600;
+      color: #1e293b;
+      cursor: pointer;
+    }
+    .pc-detail-btn:hover { background: #f1f5f9; }
+
+    .pc-avail-badge {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .pc-avail-badge.available   { background: #dcfce7; color: #15803d; }
+    .pc-avail-badge.unavailable { background: #fee2e2; color: #b91c1c; }
+
+    .pc-row-lr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .pc-emoji { font-size: 11px; line-height: 1; }
+
+    .pc-subsection-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #e2e8f0;
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 <body>
@@ -435,6 +490,7 @@
           priceNonGaming: get(23),
           supportedApiIntegration: get(24),
           channelStatus: get(25),
+          currencyCode: get(26),
         };
       });
     }
@@ -551,22 +607,6 @@
       ];
       const apiHasData = apiFields.some(([, v]) => !isEmptyValue(v));
 
-      const apiToggleHtml = apiHasData
-        ? `<button type="button" class="pc-toggle" aria-expanded="false"
-             onclick="pcToggle('${apiId}', this)">${escapeHtml(d.apiIntegration)} <span class="chevron">▾</span></button>`
-        : `<span class="pc-toggle is-static">${escapeHtml(d.apiIntegration)}</span>`;
-
-      const apiCollapseBody = apiHasData
-        ? `<div class="pc-collapse-grid">
-             ${apiFields.map(([label, v]) => isEmptyValue(v) ? '' : `
-               <div class="pc-collapse-item">
-                 <span class="pc-collapse-label">${escapeHtml(label)}</span>
-                 <span class="pc-collapse-value">${escapeHtml(v)}</span>
-               </div>
-             `).join('')}
-           </div>`
-        : '';
-
       const priceFields = [
         ['Web/PC Content', d.priceWebPc],
         ['Mobile Content', d.priceMobile],
@@ -575,10 +615,15 @@
       const priceHasData = d.pricePointType.trim() === 'Fixed Price Points'
         && priceFields.some(([, v]) => !isEmptyValue(v));
 
+      const supportedText = (d.supportedApiIntegration || '').toLowerCase();
+      const hostedPageEmoji = supportedText.includes('hosted payment page') ? '✅' : '❌';
+      const backendApiAvailable = supportedText.includes('backend api');
+      const backendApiEmoji = backendApiAvailable ? '✅' : '❌';
+
       const priceToggleHtml = priceHasData
-        ? `<button type="button" class="pc-toggle" aria-expanded="false"
-             onclick="pcToggle('${priceId}', this)">${escapeHtml(d.pricePointType)} <span class="chevron">▾</span></button>`
-        : `<span class="pc-toggle is-static">${escapeHtml(d.pricePointType)}</span>`;
+        ? `<button type="button" class="pc-detail-btn" aria-expanded="false"
+             onclick="pcToggle('${priceId}', this)">Show Detail Fixed Price Point</button>`
+        : '';
 
       const priceCollapseBody = priceHasData
         ? `<div class="pc-collapse-grid">${priceFields.map(([label, v]) => renderPriceList(label, v)).join('')}</div>`
@@ -586,6 +631,14 @@
 
       const specialReqValue = isEmptyValue(d.specialRequirement) ? 'None' : d.specialRequirement;
       const hasImportantNote = !isEmptyValue(d.importantNote);
+
+      // Currency display: when Codapay (or All Products) is selected,
+      // append "/USD" — unless the currency is already USD, in which
+      // case that would just be redundant. When Codashop/Webstore is
+      // explicitly selected, show the plain currency value instead.
+      const currencyIsUSD = d.currency.trim().toUpperCase() === 'USD';
+      const currencyCodapayView = currencyIsUSD ? d.currency : `${d.currency}/USD`;
+      const currencyOtherView = d.currency;
 
       return `
         <div class="pc-card">
@@ -599,7 +652,6 @@
               <div class="pc-category-body">
                 <div class="pc-kv-item"><span class="pc-kv-label">Region</span><span class="pc-kv-value">${escapeHtml(d.region)}</span></div>
                 <div class="pc-kv-item"><span class="pc-kv-label">Country</span><span class="pc-kv-value">${escapeHtml(d.country)}</span></div>
-                <div class="pc-kv-item"><span class="pc-kv-label">Currency</span><span class="pc-kv-value">${escapeHtml(d.currency)}</span></div>
                 <div class="pc-kv-item"><span class="pc-kv-label">Type</span><span class="pc-kv-value">${escapeHtml(d.type)}</span></div>
                 <div class="pc-kv-item">
                   <span class="pc-kv-label">Applicable Product/Status</span>
@@ -611,32 +663,73 @@
             <div class="pc-category">
               <div class="pc-category-label">Technical Information</div>
               <div class="pc-category-body">
-                <div class="pc-kv-item"><span class="pc-kv-label">Min</span><span class="pc-kv-value">${escapeHtml(d.min)}</span></div>
-                <div class="pc-kv-item"><span class="pc-kv-label">Max</span><span class="pc-kv-value">${escapeHtml(d.max)}</span></div>
-                <div class="pc-kv-item"><span class="pc-kv-label">Other Limits</span><span class="pc-kv-value">${escapeHtml(displayOrDash(d.otherLimits))}</span></div>
-                <div class="pc-kv-item"><span class="pc-kv-label">Decimal Support</span><span class="pc-kv-value">${escapeHtml(d.decimalSupport)}</span></div>
-                <div class="pc-kv-item"><span class="pc-kv-label">Transaction Expiry Time</span><span class="pc-kv-value">${escapeHtml(displayOrDash(d.transactionExpiry))}</span></div>
-                <div class="pc-kv-item">
-                  <span class="pc-kv-label">Price Point Type</span>
-                  ${priceToggleHtml}
-                  ${priceHasData ? `<div class="pc-collapse pc-collapse-inline" id="${priceId}">${priceCollapseBody}</div>` : ''}
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Currency (Code)</span>
+                  <span class="pc-kv-value"><span class="pc-currency-codapay-view">${escapeHtml(currencyCodapayView)}</span><span class="pc-currency-other-view">${escapeHtml(currencyOtherView)}</span>${!isEmptyValue(d.currencyCode) ? `<span class="pc-codapay-only-text"> (${escapeHtml(d.currencyCode)})</span>` : ''}</span>
                 </div>
-                <div class="pc-kv-item"><span class="pc-kv-label">Channel ID/payType</span><span class="pc-kv-value mono">${escapeHtml(d.channelId)}</span></div>
-                <div class="pc-kv-item pc-codapay-only"><span class="pc-kv-label">Supported API Integration</span><span class="pc-kv-value multiline">${escapeHtml(displayOrDash(d.supportedApiIntegration))}</span></div>
-                <div class="pc-kv-item pc-codapay-only">
-                  <span class="pc-kv-label">Backend API Integration</span>
-                  ${apiToggleHtml}
-                  ${apiHasData ? `<div class="pc-collapse pc-collapse-inline" id="${apiId}">${apiCollapseBody}</div>` : ''}
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Channel ID/payType</span>
+                  <span class="pc-kv-value mono">${escapeHtml(d.channelId)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Min [Local Currency]</span>
+                  <span class="pc-kv-value">${escapeHtml(d.min)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Max [Local Currency]</span>
+                  <span class="pc-kv-value">${escapeHtml(d.max)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Price Point Type</span>
+                  <span class="pc-kv-value">${escapeHtml(d.pricePointType)}</span>
+                </div>
+                ${priceHasData ? `
+                  <div class="pc-kv-item">
+                    ${priceToggleHtml}
+                    <div class="pc-collapse pc-collapse-inline" id="${priceId}">${priceCollapseBody}</div>
+                  </div>
+                ` : ''}
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Other Limits</span>
+                  <span class="pc-kv-value">${escapeHtml(displayOrDash(d.otherLimits))}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Decimal Support</span>
+                  <span class="pc-kv-value">${escapeHtml(d.decimalSupport)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Transaction Expiry Time</span>
+                  <span class="pc-kv-value">${escapeHtml(displayOrDash(d.transactionExpiry))}</span>
+                </div>
+
+                <div class="pc-codapay-only">
+                  <div class="pc-subsection-label">Codapay Information</div>
+                  <div class="pc-kv-item pc-row-lr">
+                    <span class="pc-kv-label">Hosted Payment Page</span>
+                    <span class="pc-emoji">${hostedPageEmoji}</span>
+                  </div>
+                  <div class="pc-kv-item pc-row-lr">
+                    <span class="pc-kv-label">Backend API Integration</span>
+                    <span class="pc-emoji">${backendApiEmoji}</span>
+                  </div>
+                  ${backendApiAvailable && apiHasData ? `<div class="pc-kv-item"><div class="pc-collapse-grid">
+                      ${apiFields.map(([label, v]) => isEmptyValue(v) ? '' : `
+                        <div class="pc-collapse-item">
+                          <span class="pc-collapse-label">${escapeHtml(label)}</span>
+                          <span class="pc-collapse-value">${escapeHtml(v)}</span>
+                        </div>
+                      `).join('')}
+                    </div></div>` : ''}
                 </div>
               </div>
             </div>
 
             <div class="pc-category">
-              <div class="pc-category-label">Additional Information</div>
+              <div class="pc-category-label">Special Requirement</div>
               <div class="pc-category-body">
                 <div class="pc-kv-item">
                   <div class="pc-note">
-                    <span class="pc-note-label">Special Requirement</span>${escapeHtml(specialReqValue)}
+                    ${escapeHtml(specialReqValue)}
                     ${hasImportantNote ? `
                       <div class="pc-note-divider"></div>
                       <span class="pc-note-label important">
@@ -685,14 +778,21 @@
       updateCodapayOnlyVisibility(product);
     }
 
-    // Backend API Integration + Supported API Integration are only
-    // meaningful for Codapay. Show them when Codapay is the selected
-    // filter (or no filter is set, since that doesn't exclude Codapay);
-    // hide them when a different product is explicitly selected.
+    // Backend API Integration + Supported API Integration + the Currency
+    // Code suffix + the "/USD" currency variant are only meaningful for
+    // Codapay. Show them when Codapay is the selected filter (or no
+    // filter is set, since that doesn't exclude Codapay); hide them when
+    // a different product is explicitly selected.
     function updateCodapayOnlyVisibility(product) {
       const shouldShow = !product || product === 'Codapay';
-      document.querySelectorAll('.pc-codapay-only').forEach(el => {
+      document.querySelectorAll('.pc-codapay-only, .pc-codapay-only-text').forEach(el => {
         el.classList.toggle('pc-hidden', !shouldShow);
+      });
+      document.querySelectorAll('.pc-currency-codapay-view').forEach(el => {
+        el.classList.toggle('pc-hidden', !shouldShow);
+      });
+      document.querySelectorAll('.pc-currency-other-view').forEach(el => {
+        el.classList.toggle('pc-hidden', shouldShow);
       });
     }
 
