@@ -231,12 +231,14 @@
           region: get(0) || '-',
           country: get(1) || '-',
           currency: get(2) || '-',
-          channel: get(3) || '-',      // "Payment Channel" — also used as Type
-          minPerTx: get(4) || '-',
-          maxPerTx: get(5) || '-',
-          dailyLimit: get(6) || '-',
-          monthlyLimit: get(7) || '-',
-          otherRestrictions: get(8),
+          supportedCurrency: get(3),
+          channel: get(4) || '-',      // "Payment Channel" — also used as Type
+          minPerTx: get(5) || '-',
+          maxPerTx: get(6) || '-',
+          dailyLimit: get(7) || '-',
+          monthlyLimit: get(8) || '-',
+          otherRestrictions: get(9),
+          note: get(10),
         };
       });
     }
@@ -275,6 +277,7 @@
 
     function buildCard(d) {
       const otherRestrictionsValue = isEmptyValue(d.otherRestrictions) ? 'None' : d.otherRestrictions;
+      const noteValue = isEmptyValue(d.note) ? 'None' : d.note;
 
       return `
         <div class="pc-card">
@@ -288,6 +291,7 @@
               <div class="pc-category-body">
                 <div class="pc-kv-item"><span class="pc-kv-label">Region</span><span class="pc-kv-value">${escapeHtml(d.region)}</span></div>
                 <div class="pc-kv-item"><span class="pc-kv-label">Country</span><span class="pc-kv-value">${escapeHtml(d.country)}</span></div>
+                <div class="pc-kv-item"><span class="pc-kv-label">Supported Currency</span><span class="pc-kv-value">${escapeHtml(displayOrDash(d.supportedCurrency))}</span></div>
                 <div class="pc-kv-item"><span class="pc-kv-label">Currency</span><span class="pc-kv-value">${escapeHtml(d.currency)}</span></div>
                 <div class="pc-kv-item"><span class="pc-kv-label">Type</span><span class="pc-kv-value">${escapeHtml(d.channel)}</span></div>
               </div>
@@ -296,8 +300,8 @@
             <div class="pc-category">
               <div class="pc-category-label">Technical Information</div>
               <div class="pc-category-body">
-                <div class="pc-kv-item"><span class="pc-kv-label">Min (Per Transaction)</span><span class="pc-kv-value">${escapeHtml(d.minPerTx)}</span></div>
-                <div class="pc-kv-item"><span class="pc-kv-label">Max (Per Transaction)</span><span class="pc-kv-value">${escapeHtml(d.maxPerTx)}</span></div>
+                <div class="pc-kv-item"><span class="pc-kv-label">Min/txn [Local Currency]</span><span class="pc-kv-value">${escapeHtml(d.minPerTx)}</span></div>
+                <div class="pc-kv-item"><span class="pc-kv-label">Max/txn [Local Currency]</span><span class="pc-kv-value">${escapeHtml(d.maxPerTx)}</span></div>
                 <div class="pc-kv-item"><span class="pc-kv-label">Daily Limit</span><span class="pc-kv-value">${escapeHtml(d.dailyLimit)}</span></div>
                 <div class="pc-kv-item"><span class="pc-kv-label">Monthly Limit</span><span class="pc-kv-value">${escapeHtml(d.monthlyLimit)}</span></div>
               </div>
@@ -309,6 +313,11 @@
                 <div class="pc-kv-item">
                   <div class="pc-note">
                     <span class="pc-note-label">Other Restrictions</span>${escapeHtml(otherRestrictionsValue)}
+                  </div>
+                </div>
+                <div class="pc-kv-item">
+                  <div class="pc-note">
+                    <span class="pc-note-label">Note</span>${escapeHtml(noteValue)}
                   </div>
                 </div>
               </div>
