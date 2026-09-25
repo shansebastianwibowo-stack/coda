@@ -633,11 +633,15 @@
       const hasImportantNote = !isEmptyValue(d.importantNote);
 
       // Currency display: when Codapay (or All Products) is selected,
-      // append "/USD" — unless the currency is already USD, in which
-      // case that would just be redundant. When Codashop/Webstore is
+      // append "/USD (840)" with each currency getting its own inline
+      // ISO code — unless the currency is already USD, in which case
+      // that would just be redundant. When Codashop/Webstore is
       // explicitly selected, show the plain currency value instead.
       const currencyIsUSD = d.currency.trim().toUpperCase() === 'USD';
-      const currencyCodapayView = currencyIsUSD ? d.currency : `${d.currency}/USD`;
+      const hasCurrencyCode = !isEmptyValue(d.currencyCode);
+      const currencyCodapayView = currencyIsUSD
+        ? (hasCurrencyCode ? `${d.currency} (${d.currencyCode})` : d.currency)
+        : (hasCurrencyCode ? `${d.currency} (${d.currencyCode})/USD (840)` : `${d.currency}/USD (840)`);
       const currencyOtherView = d.currency;
 
       return `
@@ -665,7 +669,7 @@
               <div class="pc-category-body">
                 <div class="pc-kv-item pc-row-lr">
                   <span class="pc-kv-label">Currency (Code)</span>
-                  <span class="pc-kv-value"><span class="pc-currency-codapay-view">${escapeHtml(currencyCodapayView)}</span><span class="pc-currency-other-view">${escapeHtml(currencyOtherView)}</span>${!isEmptyValue(d.currencyCode) ? `<span class="pc-codapay-only-text"> (${escapeHtml(d.currencyCode)})</span>` : ''}</span>
+                  <span class="pc-kv-value"><span class="pc-currency-codapay-view">${escapeHtml(currencyCodapayView)}</span><span class="pc-currency-other-view">${escapeHtml(currencyOtherView)}</span></span>
                 </div>
                 <div class="pc-kv-item pc-row-lr">
                   <span class="pc-kv-label">Channel ID/payType</span>
@@ -778,11 +782,6 @@
       updateCodapayOnlyVisibility(product);
     }
 
-    // Backend API Integration + Supported API Integration + the Currency
-    // Code suffix + the "/USD" currency variant are only meaningful for
-    // Codapay. Show them when Codapay is the selected filter (or no
-    // filter is set, since that doesn't exclude Codapay); hide them when
-    // a different product is explicitly selected.
     function updateCodapayOnlyVisibility(product) {
       const shouldShow = !product || product === 'Codapay';
       document.querySelectorAll('.pc-codapay-only, .pc-codapay-only-text').forEach(el => {
