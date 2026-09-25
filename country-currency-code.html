@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Country &amp; Currency Codes Directory</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 16px;
+      width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #f8fafc;
+      font-size: 14px;
+    }
+
+    .filter-grid-pc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      max-width: 550px;
+    }
+    .filter-group-pc { display: flex; flex-direction: column; gap: 4px; }
+    .filter-group-pc label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .filter-group-pc input,
+    .filter-group-pc select {
+      font-size: 12px;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      background-color: #fff;
+      width: auto;
+    }
+    #searchInput   { width: 220px; }
+    #regionSelect  { width: 160px; }
+    #countrySelect { width: 180px; }
+
+    .meta-info-pc {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .card-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 550px;
+    }
+
+    .pc-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .pc-card-header {
+      padding: 10px 14px;
+      background: #0f172a;
+    }
+    .pc-card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .pc-kv {
+      display: flex;
+      gap: 10px;
+      padding: 12px 14px;
+      align-items: stretch;
+    }
+    .pc-category {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #fbfcfd;
+      overflow: hidden;
+    }
+    .pc-category-label {
+      background: #eef2f6;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 5px 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .pc-category-body {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .pc-row-lr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .pc-kv-label {
+      display: block;
+      color: #64748b;
+      font-size: 12px;
+    }
+    .pc-kv-value {
+      font-weight: 600;
+      color: #1e293b;
+      font-family: ui-monospace, monospace;
+    }
+
+    .pc-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="filter-grid-pc">
+    <div class="filter-group-pc">
+      <label for="searchInput">Search</label>
+      <input type="text" id="searchInput" placeholder="Search region, country, currency..." />
+    </div>
+    <div class="filter-group-pc">
+      <label for="regionSelect">Region</label>
+      <select id="regionSelect"><option value="">All Regions</option></select>
+    </div>
+    <div class="filter-group-pc">
+      <label for="countrySelect">Country</label>
+      <select id="countrySelect"><option value="">All Countries</option></select>
+    </div>
+  </div>
+
+  <div class="meta-info-pc" id="countDisplay">Fetching codes...</div>
+
+  <div class="card-grid" id="cardGrid"></div>
+
+  <script>
+    const SPREADSHEET_ID = '19txcCv_OTSISqQYDQObvQSfSpMCkHj4gBjmUw6oyd-w';
+    const GID = '0';
+    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
+
+    let rawData = [];
+
+    function isEmptyValue(v) {
+      if (v === undefined || v === null) return true;
+      const t = String(v).trim();
+      return t === '' || t.toUpperCase() === 'N/A' || t === '-';
+    }
+
+    function displayOrDash(v) {
+      return isEmptyValue(v) ? '-' : v;
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let field = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (inQuotes) {
+          if (char === '"') {
+            if (next === '"') { field += '"'; i++; }
+            else { inQuotes = false; }
+          } else {
+            field += char;
+          }
+        } else {
+          if (char === '"') {
+            inQuotes = true;
+          } else if (char === ',') {
+            row.push(field); field = '';
+          } else if (char === '\r') {
+            // ignore
+          } else if (char === '\n') {
+            row.push(field); rows.push(row); row = []; field = '';
+          } else {
+            field += char;
+          }
+        }
+      }
+      if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+
+      return rows.slice(1).filter(cols => !(cols.length === 1 && cols[0].trim() === '')).map(cols => {
+        const get = (i) => (cols[i] !== undefined ? cols[i].trim() : '');
+        return {
+          region: get(0) || '-',
+          country: get(1) || '-',
+          currency: get(2) || '-',
+          currencyCode: get(26),
+          countryCode: get(27),
+        };
+      });
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch(CSV_URL);
+        if (!res.ok) throw new Error('Network error');
+        const text = await res.text();
+        rawData = parseCSV(text);
+        populateDropdowns();
+        renderCards();
+      } catch (err) {
+        document.getElementById('countDisplay').innerText = 'Unable to load data. Please ensure the Google Sheet is published to web.';
+      }
+    }
+
+    function populateDropdowns() {
+      const regions = [...new Set(rawData.map(d => d.region))].filter(v => v !== '-').sort();
+      const countries = [...new Set(rawData.map(d => d.country))].filter(v => v !== '-').sort();
+
+      fillSelect('regionSelect', regions, 'All Regions');
+      fillSelect('countrySelect', countries, 'All Countries');
+    }
+
+    function fillSelect(id, items, defaultText) {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="">${defaultText}</option>` + items.map(i => `<option value="${i}">${i}</option>`).join('');
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function buildRegionCard(region, rows) {
+      const countryMap = new Map();
+      const currencyMap = new Map();
+
+      rows.forEach(d => {
+        if (d.country !== '-' && !countryMap.has(d.country)) {
+          countryMap.set(d.country, d.countryCode);
+        } else if (d.country !== '-' && isEmptyValue(countryMap.get(d.country)) && !isEmptyValue(d.countryCode)) {
+          countryMap.set(d.country, d.countryCode);
+        }
+
+        if (d.currency !== '-' && !currencyMap.has(d.currency)) {
+          currencyMap.set(d.currency, d.currencyCode);
+        } else if (d.currency !== '-' && isEmptyValue(currencyMap.get(d.currency)) && !isEmptyValue(d.currencyCode)) {
+          currencyMap.set(d.currency, d.currencyCode);
+        }
+      });
+
+      const countryRows = [...countryMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+      const currencyRows = [...currencyMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+
+      const countryLines = countryRows.map(([country, code]) => `
+        <div class="pc-row-lr">
+          <span class="pc-kv-value">${escapeHtml(country)}</span>
+          <span class="pc-kv-value">${escapeHtml(displayOrDash(code))}</span>
+        </div>
+      `).join('');
+
+      const currencyLines = currencyRows.map(([currency, code]) => `
+        <div class="pc-row-lr">
+          <span class="pc-kv-value">${escapeHtml(currency)}</span>
+          <span class="pc-kv-value">${escapeHtml(displayOrDash(code))}</span>
+        </div>
+      `).join('');
+
+      return `
+        <div class="pc-card">
+          <div class="pc-card-header">
+            <p class="pc-card-title">${escapeHtml(region)}</p>
+          </div>
+
+          <div class="pc-kv">
+            <div class="pc-category">
+              <div class="pc-category-label">Country Information</div>
+              <div class="pc-category-body">
+                <div class="pc-row-lr">
+                  <span class="pc-kv-label">Country</span>
+                  <span class="pc-kv-label">Country Code (ISO 3166)</span>
+                </div>
+                ${countryLines}
+              </div>
+            </div>
+
+            <div class="pc-category">
+              <div class="pc-category-label">Currency Information</div>
+              <div class="pc-category-body">
+                <div class="pc-row-lr">
+                  <span class="pc-kv-label">Currency</span>
+                  <span class="pc-kv-label">Currency Code (ISO 4217)</span>
+                </div>
+                ${currencyLines}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCards() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const region = document.getElementById('regionSelect').value;
+      const country = document.getElementById('countrySelect').value;
+
+      const filtered = rawData.filter(d => {
+        const matchSearch = !search ||
+          d.region.toLowerCase().includes(search) ||
+          d.country.toLowerCase().includes(search) ||
+          d.currency.toLowerCase().includes(search);
+        const matchRegion = !region || d.region === region;
+        const matchCountry = !country || d.country === country;
+        return matchSearch && matchRegion && matchCountry;
+      });
+
+      const byRegion = new Map();
+      filtered.forEach(d => {
+        if (!byRegion.has(d.region)) byRegion.set(d.region, []);
+        byRegion.get(d.region).push(d);
+      });
+
+      const regions = [...byRegion.keys()].sort();
+      document.getElementById('countDisplay').innerText = `Showing ${regions.length} region(s)`;
+      const grid = document.getElementById('cardGrid');
+
+      if (regions.length === 0) {
+        grid.innerHTML = '<div class="pc-empty">No regions matched your selection.</div>';
+        return;
+      }
+
+      grid.innerHTML = regions.map(region => buildRegionCard(region, byRegion.get(region))).join('');
+    }
+
+    document.getElementById('regionSelect').onchange = renderCards;
+    document.getElementById('countrySelect').onchange = renderCards;
+    document.getElementById('searchInput').oninput = renderCards;
+
+    loadData();
+  </script>
+</body>
+</html>
