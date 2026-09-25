@@ -498,6 +498,7 @@
           supportedApiIntegration: get(24),
           channelStatus: get(25),
           currencyCode: get(26),
+          countryCode: get(27),
         };
       });
     }
@@ -639,16 +640,13 @@
       const specialReqValue = isEmptyValue(d.specialRequirement) ? 'None' : d.specialRequirement;
       const hasImportantNote = !isEmptyValue(d.importantNote);
 
-      // Currency display: when Codapay (or All Products) is selected,
-      // show two stacked lines — the local currency (with its ISO code
-      // if available) on top, and a fixed "USD (840)" line below,
-      // unless the currency is already USD (in which case a second
-      // line would be redundant). When Codashop/Webstore is explicitly
-      // selected, show a single plain currency line instead.
       const currencyIsUSD = d.currency.trim().toUpperCase() === 'USD';
       const hasCurrencyCode = !isEmptyValue(d.currencyCode);
       const currencyLine1 = hasCurrencyCode ? `${d.currency} (${d.currencyCode})` : d.currency;
       const currencyOtherView = d.currency;
+
+      const hasCountryCode = !isEmptyValue(d.countryCode);
+      const countryCodapayView = hasCountryCode ? `${d.country} (${d.countryCode})` : d.country;
 
       return `
         <div class="pc-card">
@@ -660,9 +658,13 @@
             <div class="pc-category">
               <div class="pc-category-label">General Information</div>
               <div class="pc-category-body">
-                <div class="pc-kv-item"><span class="pc-kv-label">Region</span><span class="pc-kv-value">${escapeHtml(d.region)}</span></div>
-                <div class="pc-kv-item"><span class="pc-kv-label">Country</span><span class="pc-kv-value">${escapeHtml(d.country)}</span></div>
-                <div class="pc-kv-item"><span class="pc-kv-label">Type</span><span class="pc-kv-value">${escapeHtml(d.type)}</span></div>
+                <div class="pc-kv-item pc-row-lr"><span class="pc-kv-label">Region</span><span class="pc-kv-value">${escapeHtml(d.region)}</span></div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Country<span class="pc-codapay-only-text"> (Code)</span></span>
+                  <span class="pc-currency-codapay-view pc-kv-value">${escapeHtml(countryCodapayView)}</span>
+                  <span class="pc-currency-other-view pc-kv-value">${escapeHtml(d.country)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr"><span class="pc-kv-label">Type</span><span class="pc-kv-value">${escapeHtml(d.type)}</span></div>
                 <div class="pc-kv-item">
                   <span class="pc-kv-label">Applicable Product/Status</span>
                   ${renderProductStatus(d.product, d.channelStatus)}
@@ -674,7 +676,7 @@
               <div class="pc-category-label">Technical Information</div>
               <div class="pc-category-body">
                 <div class="pc-kv-item pc-row-lr" style="align-items: flex-start;">
-                  <span class="pc-kv-label">Currency (Code)</span>
+                  <span class="pc-kv-label">Currency<span class="pc-codapay-only-text"> (Code)</span></span>
                   <span class="pc-currency-codapay-view pc-currency-stack">
                     <span class="pc-currency-line">${escapeHtml(currencyLine1)}</span>
                     ${!currencyIsUSD ? `<span class="pc-currency-line">USD (840)</span>` : ''}
