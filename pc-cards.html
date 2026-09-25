@@ -321,6 +321,13 @@
     .pc-codapay-only-text.pc-hidden { display: none; }
     .pc-currency-codapay-view.pc-hidden { display: none; }
     .pc-currency-other-view.pc-hidden { display: none; }
+    .pc-currency-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .pc-currency-line { font-weight: 600; color: #1e293b; }
 
     .pc-detail-btn {
       display: inline-block;
@@ -633,15 +640,14 @@
       const hasImportantNote = !isEmptyValue(d.importantNote);
 
       // Currency display: when Codapay (or All Products) is selected,
-      // append "/USD (840)" with each currency getting its own inline
-      // ISO code — unless the currency is already USD, in which case
-      // that would just be redundant. When Codashop/Webstore is
-      // explicitly selected, show the plain currency value instead.
+      // show two stacked lines — the local currency (with its ISO code
+      // if available) on top, and a fixed "USD (840)" line below,
+      // unless the currency is already USD (in which case a second
+      // line would be redundant). When Codashop/Webstore is explicitly
+      // selected, show a single plain currency line instead.
       const currencyIsUSD = d.currency.trim().toUpperCase() === 'USD';
       const hasCurrencyCode = !isEmptyValue(d.currencyCode);
-      const currencyCodapayView = currencyIsUSD
-        ? (hasCurrencyCode ? `${d.currency} (${d.currencyCode})` : d.currency)
-        : (hasCurrencyCode ? `${d.currency} (${d.currencyCode})/USD (840)` : `${d.currency}/USD (840)`);
+      const currencyLine1 = hasCurrencyCode ? `${d.currency} (${d.currencyCode})` : d.currency;
       const currencyOtherView = d.currency;
 
       return `
@@ -667,20 +673,24 @@
             <div class="pc-category">
               <div class="pc-category-label">Technical Information</div>
               <div class="pc-category-body">
-                <div class="pc-kv-item pc-row-lr">
+                <div class="pc-kv-item pc-row-lr" style="align-items: flex-start;">
                   <span class="pc-kv-label">Currency (Code)</span>
-                  <span class="pc-kv-value"><span class="pc-currency-codapay-view">${escapeHtml(currencyCodapayView)}</span><span class="pc-currency-other-view">${escapeHtml(currencyOtherView)}</span></span>
+                  <span class="pc-currency-codapay-view pc-currency-stack">
+                    <span class="pc-currency-line">${escapeHtml(currencyLine1)}</span>
+                    ${!currencyIsUSD ? `<span class="pc-currency-line">USD (840)</span>` : ''}
+                  </span>
+                  <span class="pc-currency-other-view pc-kv-value">${escapeHtml(currencyOtherView)}</span>
                 </div>
                 <div class="pc-kv-item pc-row-lr">
                   <span class="pc-kv-label">Channel ID/payType</span>
                   <span class="pc-kv-value mono">${escapeHtml(d.channelId)}</span>
                 </div>
                 <div class="pc-kv-item pc-row-lr">
-                  <span class="pc-kv-label">Min [Local Currency]</span>
+                  <span class="pc-kv-label">Min</span>
                   <span class="pc-kv-value">${escapeHtml(d.min)}</span>
                 </div>
                 <div class="pc-kv-item pc-row-lr">
-                  <span class="pc-kv-label">Max [Local Currency]</span>
+                  <span class="pc-kv-label">Max</span>
                   <span class="pc-kv-value">${escapeHtml(d.max)}</span>
                 </div>
                 <div class="pc-kv-item pc-row-lr">
