@@ -250,25 +250,37 @@
     }
 
     function buildRegionCard(region, rows) {
-      const countryMap = new Map();
-      const currencyMap = new Map();
+      // De-duplicate by COUNTRY only (each country paired with its own
+      // code, first non-empty value seen wins). Currency is then looked
+      // up per-country (not deduplicated on its own), so the two lists
+      // always have the same row count and line up side by side — a
+      // currency like EUR will simply repeat next to every country
+      // that uses it, rather than being collapsed to one shared row.
+      const countryMap = new Map();       // country -> countryCode
+      const countryCurrencyMap = new Map(); // country -> [currency, currencyCode]
 
       rows.forEach(d => {
-        if (d.country !== '-' && !countryMap.has(d.country)) {
+        if (d.country === '-') return;
+
+        if (!countryMap.has(d.country)) {
           countryMap.set(d.country, d.countryCode);
-        } else if (d.country !== '-' && isEmptyValue(countryMap.get(d.country)) && !isEmptyValue(d.countryCode)) {
+        } else if (isEmptyValue(countryMap.get(d.country)) && !isEmptyValue(d.countryCode)) {
           countryMap.set(d.country, d.countryCode);
         }
 
-        if (d.currency !== '-' && !currencyMap.has(d.currency)) {
-          currencyMap.set(d.currency, d.currencyCode);
-        } else if (d.currency !== '-' && isEmptyValue(currencyMap.get(d.currency)) && !isEmptyValue(d.currencyCode)) {
-          currencyMap.set(d.currency, d.currencyCode);
+        if (!countryCurrencyMap.has(d.country)) {
+          countryCurrencyMap.set(d.country, [d.currency, d.currencyCode]);
+        } else {
+          const [existingCurrency, existingCode] = countryCurrencyMap.get(d.country);
+          if (isEmptyValue(existingCurrency) && !isEmptyValue(d.currency)) {
+            countryCurrencyMap.set(d.country, [d.currency, d.currencyCode]);
+          } else if (isEmptyValue(existingCode) && !isEmptyValue(d.currencyCode)) {
+            countryCurrencyMap.set(d.country, [existingCurrency, d.currencyCode]);
+          }
         }
       });
 
       const countryRows = [...countryMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-      const currencyRows = [...currencyMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 
       const countryLines = countryRows.map(([country, code]) => `
         <div class="pc-row-lr">
@@ -277,12 +289,15 @@
         </div>
       `).join('');
 
-      const currencyLines = currencyRows.map(([currency, code]) => `
+      const currencyLines = countryRows.map(([country]) => {
+        const [currency, code] = countryCurrencyMap.get(country) || ['-', ''];
+        return `
         <div class="pc-row-lr">
-          <span class="pc-kv-value">${escapeHtml(currency)}</span>
+          <span class="pc-kv-value">${escapeHtml(displayOrDash(currency))}</span>
           <span class="pc-kv-value">${escapeHtml(displayOrDash(code))}</span>
         </div>
-      `).join('');
+      `;
+      }).join('');
 
       return `
         <div class="pc-card">
