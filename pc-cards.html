@@ -381,18 +381,20 @@
     }
     .pc-emoji { font-size: 11px; line-height: 1; }
 
+    .pc-currency-table {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
     .pc-subsection-label {
       font-size: 9px;
       font-weight: 700;
       color: #1d4ed8;
-      text-transform: uppercase;
       letter-spacing: 0.4px;
       margin-bottom: 4px;
     }
 
-    /* Mobile: stack the 3 category boxes vertically instead of
-       cramming them into unreadably narrow side-by-side columns, and
-       let filter inputs shrink to fit instead of overflowing. */
     @media (max-width: 640px) {
       .pc-kv {
         flex-direction: column;
@@ -714,13 +716,24 @@
             <div class="pc-category">
               <div class="pc-category-label">Technical Information</div>
               <div class="pc-category-body">
-                <div class="pc-kv-item pc-row-lr" style="align-items: flex-start;">
-                  <span class="pc-kv-label">Currency<span class="pc-codapay-only-text"> (Code)</span></span>
-                  <span class="pc-currency-codapay-view pc-currency-stack">
-                    <span class="pc-currency-line">${escapeHtml(currencyLine1)}</span>
-                    ${!currencyIsUSD ? `<span class="pc-currency-line">USD (840)</span>` : ''}
-                  </span>
-                  <span class="pc-currency-other-view pc-kv-value">${escapeHtml(currencyOtherView)}</span>
+                <div class="pc-kv-item pc-currency-codapay-view pc-currency-table">
+                  <div class="pc-row-lr">
+                    <span class="pc-kv-label">Presentment Currency</span>
+                    <span class="pc-kv-label">Currency (Code)</span>
+                  </div>
+                  <div class="pc-row-lr">
+                    <span class="pc-kv-value">Local</span>
+                    <span class="pc-kv-value">${escapeHtml(currencyLine1)}</span>
+                  </div>
+                  ${!currencyIsUSD ? `
+                  <div class="pc-row-lr">
+                    <span class="pc-kv-value">Other</span>
+                    <span class="pc-kv-value">USD (840)</span>
+                  </div>` : ''}
+                </div>
+                <div class="pc-kv-item pc-currency-other-view pc-row-lr">
+                  <span class="pc-kv-label">Presentment Currency</span>
+                  <span class="pc-kv-value">${escapeHtml(currencyOtherView)}</span>
                 </div>
                 <div class="pc-kv-item pc-row-lr">
                   <span class="pc-kv-label">Channel ID/payType</span>
