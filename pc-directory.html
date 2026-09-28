@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Directory</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 16px;
+      width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #f8fafc;
+      font-size: 14px;
+    }
+
+    .pd-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 750px;
+    }
+
+    .pd-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 18px;
+    }
+
+    .pd-card-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .pd-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 4px;
+    }
+    .pd-card-desc {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .pd-btn {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #2563eb;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .pd-btn:hover { background: #1d4ed8; }
+    .pd-btn .arrow { font-size: 14px; line-height: 1; }
+
+    @media (max-width: 480px) {
+      .pd-card {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: left;
+      }
+      .pd-btn {
+        justify-content: center;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="pd-grid">
+    <div class="pd-card">
+      <div class="pd-card-body">
+        <p class="pd-card-title">Pay Types</p>
+        <p class="pd-card-desc">An overview of the payment method categories used across the directory, explaining how each type works.</p>
+      </div>
+      <a class="pd-btn" href="https://docs.coda.co/general-information/payment-directory/pay-types" target="_top">Explore <span class="arrow">›</span></a>
+    </div>
+
+    <div class="pd-card">
+      <div class="pd-card-body">
+        <p class="pd-card-title">Pay-In Supported Channels</p>
+        <p class="pd-card-desc">A searchable directory of all payment channels available for collecting payments from customers.</p>
+      </div>
+      <a class="pd-btn" href="https://docs.coda.co/general-information/payment-directory/pay-in-supported-channels" target="_top">Explore <span class="arrow">›</span></a>
+    </div>
+
+    <div class="pd-card">
+      <div class="pd-card-body">
+        <p class="pd-card-title">Pay-Out Supported Channels</p>
+        <p class="pd-card-desc">Counterpart to the Pay-In: a reference of channels available for sending funds out to customers or partners.</p>
+      </div>
+      <a class="pd-btn" href="https://docs.coda.co/general-information/payment-directory/pay-out-supported-channels" target="_top">Explore <span class="arrow">›</span></a>
+    </div>
+
+    <div class="pd-card">
+      <div class="pd-card-body">
+        <p class="pd-card-title">Country Codes</p>
+        <p class="pd-card-desc">A searchable directory of each supported country to its country code.</p>
+      </div>
+      <a class="pd-btn" href="https://docs.coda.co/general-information/payment-directory/country-codes" target="_top">Explore <span class="arrow">›</span></a>
+    </div>
+
+    <div class="pd-card">
+      <div class="pd-card-body">
+        <p class="pd-card-title">Currency Codes</p>
+        <p class="pd-card-desc">A searchable directory of each supported currency to its ISO currency code.</p>
+      </div>
+      <a class="pd-btn" href="https://docs.coda.co/general-information/payment-directory/currency-codes" target="_top">Explore <span class="arrow">›</span></a>
+    </div>
+  </div>
+
+</body>
+</html>
