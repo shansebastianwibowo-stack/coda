@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Payment Channels Detail</title>
+  <title>Payment Channels Directory</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -389,6 +389,31 @@
       letter-spacing: 0.4px;
       margin-bottom: 4px;
     }
+
+    /* Mobile: stack the 3 category boxes vertically instead of
+       cramming them into unreadably narrow side-by-side columns, and
+       let filter inputs shrink to fit instead of overflowing. */
+    @media (max-width: 640px) {
+      .pc-kv {
+        flex-direction: column;
+      }
+      .filter-group-pc input,
+      .filter-group-pc select {
+        width: 100%;
+      }
+      #searchInput, #regionSelect, #countrySelect, #typeSelect, #productSelect {
+        width: 100%;
+      }
+      .filter-group-pc {
+        flex: 1 1 calc(50% - 5px);
+        min-width: 140px;
+      }
+    }
+    @media (max-width: 420px) {
+      .filter-group-pc {
+        flex: 1 1 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -733,7 +758,7 @@
                 </div>
 
                 <div class="pc-codapay-only">
-                  <div class="pc-subsection-label">Codapay Integration Specification</div>
+                  <div class="pc-subsection-label">Codapay Channel Detail</div>
                   <div class="pc-kv-item pc-row-lr">
                     <span class="pc-kv-label">Hosted Payment Page</span>
                     <span class="pc-emoji">${hostedPageEmoji}</span>
