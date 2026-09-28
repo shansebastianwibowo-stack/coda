@@ -6,135 +6,436 @@
   <title>Payment Channels Directory</title>
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; padding: 12px; width: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background: #ffffff; }
+    body {
+      margin: 0;
+      padding: 16px;
+      width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #f8fafc;
+      font-size: 12px;
+    }
 
     .filter-grid-pc {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 12px;
-      max-width: 763px;
+      gap: 10px;
+      margin-bottom: 14px;
+      max-width: 750px;
     }
-    .filter-row1, .filter-row2 {
-      flex: 0 0 auto;
-    }
-    .row-break {
-      flex-basis: 100%;
-      height: 0;
-      margin: 0;
-      padding: 0;
-    }
-
     .filter-group-pc { display: flex; flex-direction: column; gap: 4px; }
-    .filter-group-pc label { 
-      font-size: 10px; 
-      font-weight: 700; 
-      color: #64748b; 
-      text-transform: uppercase; 
-      letter-spacing: 0.5px; 
-    }
-    .filter-group-pc input, 
-    .filter-group-pc select { 
-      font-size: 12px;
-      padding: 6px 10px; 
-      border: 1px solid #cbd5e1; 
-      border-radius: 6px; 
-      outline: none; 
-      background-color: #fff; 
-      width: auto; 
-    }
-
-    #searchInput   { width: 260px; }
-    #regionSelect  { width: 160px; }
-    #countrySelect { width: 180px; }
-    #typeSelect    { width: 200px; }
-    #productSelect { width: 160px; }
-
-    .meta-info-pc { 
-      font-size: 12px; 
-      color: #64748b; 
-      margin-bottom: 12px; 
-      font-weight: 500; 
-    }
-
-    .table-container-pc { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
-
-    .table-container-pc table { table-layout: fixed; width: 763px; border-collapse: collapse; }
-    .table-container-pc th { 
-      background: #f8fafc; 
-      padding: 10px 12px; 
-      border-bottom: 2px solid #e2e8f0; 
-      font-weight: 600; 
-      color: #475569; 
-      font-size: 12px;
-    }
-    .table-container-pc td { 
-      padding: 10px 12px; 
-      border-bottom: 1px solid #f1f5f9; 
-      color: #334155; 
+    .filter-group-pc label {
       font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-
-    .table-container-pc th, .table-container-pc td { text-align: center; vertical-align: middle; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; }
-
-    .table-container-pc tr:hover { background: #f8fafc; }
-
-    .badge-pc { 
-      display: inline-block; 
-      padding: 2px 6px; 
-      border-radius: 12px; 
-      font-size: 9px; 
-      font-weight: 600; 
-      background-color: #e2e8f0; 
-      color: #334155; 
-    }
-    .channel-name-pc { 
-      font-weight: 600; 
-      color: #0f172a; 
+    .filter-group-pc input,
+    .filter-group-pc select {
       font-size: 10px;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      background-color: #fff;
+      width: auto;
     }
-    .sub-text-pc { font-size: 9px; color: #64748b; }
+    #searchInput   { width: 220px; }
+    #regionSelect  { width: 140px; }
+    #countrySelect { width: 160px; }
+    #typeSelect    { width: 170px; }
+    #productSelect { width: 140px; }
 
-    /* Individual fixed pixel widths, per column */
-    .table-container-pc th:nth-child(1), .table-container-pc td:nth-child(1) { width: 220px; }
-    .table-container-pc th:nth-child(2), .table-container-pc td:nth-child(2) { width: 85px; }
-    .table-container-pc th:nth-child(3), .table-container-pc td:nth-child(3) { width: 75px; }
-    .table-container-pc th:nth-child(4), .table-container-pc td:nth-child(4) { width: 85px; }
-    .table-container-pc th:nth-child(5), .table-container-pc td:nth-child(5) { width: 85px; }
-    .table-container-pc th:nth-child(6), .table-container-pc td:nth-child(6) { width: 235px; }
+    .meta-info-pc {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
 
-    .info-col { text-align: left; }
-    .info-col div { white-space: nowrap; font-size: 10px; }
+    .card-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 750px;
+    }
 
-    .detail-col { text-align: left; }
-    .detail-col div { font-size: 10px; }
-    .detail-col .detail-line { white-space: nowrap; }
-    .detail-col .detail-wrap { white-space: normal; word-wrap: break-word; }
+    .pc-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .pc-card-header {
+      padding: 10px 14px;
+      background: #0f172a;
+    }
+    .pc-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .pc-kv {
+      display: flex;
+      gap: 10px;
+      padding: 12px 14px;
+      align-items: stretch;
+    }
+    .pc-category {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #fbfcfd;
+      overflow: hidden;
+    }
+    .pc-category-label {
+      background: #eef2f6;
+      color: #475569;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 5px 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .pc-category-body {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .pc-kv-item { font-size: 9px; }
+    .pc-kv-label {
+      display: block;
+      color: #64748b;
+      font-size: 9px;
+      margin-bottom: 1px;
+    }
+    .pc-kv-value {
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .pc-kv-value.mono { font-family: ui-monospace, monospace; font-weight: 500; }
+    .pc-kv-value.multiline { white-space: pre-line; line-height: 1.4; }
+
+    .pc-collapse-inline {
+      margin-top: 6px;
+    }
+
+    .pc-product-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .pc-product-tag {
+      font-size: 9px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #334155;
+    }
+
+    .pc-status-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-top: 2px;
+    }
+    .pc-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 9px;
+    }
+    .pc-status-name { color: #1e293b; font-weight: 600; }
+    .pc-status-badge {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .pc-status-badge.active   { background: #dcfce7; color: #15803d; }
+    .pc-status-badge.inactive { background: #fee2e2; color: #b91c1c; }
+    .pc-status-badge.unknown  { background: #f1f5f9; color: #64748b; }
+
+    .pc-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #1e293b;
+      cursor: pointer;
+    }
+    .pc-toggle:hover { background: #f1f5f9; }
+    .pc-toggle.is-static {
+      cursor: default;
+      background: transparent;
+      border-color: transparent;
+      padding: 3px 0;
+    }
+    .pc-toggle .chevron {
+      font-size: 9px;
+      transition: transform 0.15s ease;
+    }
+    .pc-toggle[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+
+    .pc-collapse {
+      display: none;
+      padding: 8px 10px;
+      border: 1px dashed #e2e8f0;
+      border-radius: 6px;
+      background: #fafbfc;
+      margin-top: 4px;
+    }
+    .pc-collapse.is-open { display: block; }
+
+    .pc-collapse-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+    .pc-collapse-item { font-size: 9px; }
+    .pc-collapse-label { display: block; color: #64748b; font-size: 9px; }
+    .pc-collapse-value { font-weight: 600; color: #1e293b; }
+    .pc-collapse-full { grid-column: 1 / -1; }
+
+    .pc-pricelist {
+      font-size: 9px;
+      color: #1e293b;
+      line-height: 1.5;
+      max-height: 140px;
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid #eef1f4;
+      border-radius: 6px;
+      padding: 6px 8px;
+    }
+
+    .pc-note {
+      font-size: 9px;
+      color: #475569;
+      white-space: pre-line;
+      line-height: 1.5;
+    }
+    .pc-note-label {
+      display: block;
+      font-size: 9px;
+      font-weight: 700;
+      color: #92400e;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 3px;
+    }
+    .pc-note-label.important {
+      color: #b91c1c;
+      margin-top: 8px;
+    }
+    .pc-note-divider {
+      border-top: 1px dashed #e2e8f0;
+      margin: 8px 0;
+    }
+    .pc-note .bang {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #dc2626;
+      color: #fff;
+      font-size: 8px;
+      font-weight: 800;
+      line-height: 1;
+      margin-right: 3px;
+    }
+
+    .pc-note-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 6px;
+      border: 1px solid #fecaca;
+      background: #fef2f2;
+      color: #b91c1c;
+      cursor: pointer;
+    }
+    .pc-note-toggle:hover { background: #fee2e2; }
+    .pc-note-toggle .bang {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #dc2626;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .pc-note-toggle .chevron {
+      font-size: 9px;
+      transition: transform 0.15s ease;
+    }
+    .pc-note-toggle[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+
+    .pc-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+      font-size: 9px;
+    }
+
+    .pc-codapay-only.pc-hidden { display: none; }
+    .pc-codapay-only {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .pc-api-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .pc-codapay-box {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 10px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+    }
+    .pc-api-status {
+      flex-shrink: 0;
+      margin-top: 8px;
+    }
+    .pc-codapay-only-text.pc-hidden { display: none; }
+    .pc-currency-codapay-view.pc-hidden { display: none; }
+    .pc-currency-other-view.pc-hidden { display: none; }
+    .pc-currency-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .pc-currency-line { font-weight: 600; color: #1e293b; }
+
+    .pc-detail-btn {
+      display: inline-block;
+      margin-top: 3px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 9px;
+      font-weight: 600;
+      color: #1e293b;
+      cursor: pointer;
+    }
+    .pc-detail-btn:hover { background: #f1f5f9; }
+
+    .pc-avail-badge {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .pc-avail-badge.available   { background: #dcfce7; color: #15803d; }
+    .pc-avail-badge.unavailable { background: #fee2e2; color: #b91c1c; }
+
+    .pc-row-lr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .pc-emoji { font-size: 11px; line-height: 1; }
+
+    .pc-subsection-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #1d4ed8;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+
+    /* Mobile: stack the 3 category boxes vertically instead of
+       cramming them into unreadably narrow side-by-side columns, and
+       let filter inputs shrink to fit instead of overflowing. */
+    @media (max-width: 640px) {
+      .pc-kv {
+        flex-direction: column;
+      }
+      .filter-group-pc input,
+      .filter-group-pc select {
+        width: 100%;
+      }
+      #searchInput, #regionSelect, #countrySelect, #typeSelect, #productSelect {
+        width: 100%;
+      }
+      .filter-group-pc {
+        flex: 1 1 calc(50% - 5px);
+        min-width: 140px;
+      }
+    }
+    @media (max-width: 420px) {
+      .filter-group-pc {
+        flex: 1 1 100%;
+      }
+    }
   </style>
 </head>
 <body>
 
   <div class="filter-grid-pc">
-    <div class="filter-group-pc filter-row1">
+    <div class="filter-group-pc">
       <label for="searchInput">Search</label>
       <input type="text" id="searchInput" placeholder="Search channel, product, ID..." />
     </div>
-    <div class="filter-group-pc filter-row1">
+    <div class="filter-group-pc">
       <label for="regionSelect">Region</label>
       <select id="regionSelect"><option value="">All Regions</option></select>
     </div>
-    <div class="filter-group-pc filter-row1">
+    <div class="filter-group-pc">
       <label for="countrySelect">Country</label>
       <select id="countrySelect"><option value="">All Countries</option></select>
     </div>
-
-    <div class="row-break"></div>
-
-    <div class="filter-group-pc filter-row2">
+    <div class="filter-group-pc">
       <label for="typeSelect">Type</label>
       <select id="typeSelect"><option value="">All Types</option></select>
     </div>
-    <div class="filter-group-pc filter-row2">
+    <div class="filter-group-pc">
       <label for="productSelect">Applicable Product</label>
       <select id="productSelect">
         <option value="">All Products</option>
@@ -147,21 +448,7 @@
 
   <div class="meta-info-pc" id="countDisplay">Fetching payment channels...</div>
 
-  <div class="table-container-pc">
-    <table>
-      <thead>
-        <tr>
-          <th>Region|Country|Currency|Type</th>
-          <th>Payment Channel</th>
-          <th>Channel ID</th>
-          <th>Min</th>
-          <th>Max</th>
-          <th>Detail</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-  </div>
+  <div class="card-grid" id="cardGrid"></div>
 
   <script>
     const SPREADSHEET_ID = '19txcCv_OTSISqQYDQObvQSfSpMCkHj4gBjmUw6oyd-w';
@@ -169,11 +456,22 @@
     const CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
 
     let rawData = [];
+    let cardIdCounter = 0;
 
     function formatNumber(val) {
-      if (!val || isNaN(val.replace(/,/g, ''))) return val || '-';
-      const num = parseFloat(val.replace(/,/g, ''));
+      if (!val || isNaN(String(val).replace(/,/g, ''))) return val || '-';
+      const num = parseFloat(String(val).replace(/,/g, ''));
       return num.toLocaleString();
+    }
+
+    function isEmptyValue(v) {
+      if (v === undefined || v === null) return true;
+      const t = String(v).trim();
+      return t === '' || t.toUpperCase() === 'N/A' || t === '-';
+    }
+
+    function displayOrDash(v) {
+      return isEmptyValue(v) ? '-' : v;
     }
 
     function parseCSV(text) {
@@ -188,12 +486,8 @@
 
         if (inQuotes) {
           if (char === '"') {
-            if (next === '"') {
-              field += '"';
-              i++;
-            } else {
-              inQuotes = false;
-            }
+            if (next === '"') { field += '"'; i++; }
+            else { inQuotes = false; }
           } else {
             field += char;
           }
@@ -201,39 +495,49 @@
           if (char === '"') {
             inQuotes = true;
           } else if (char === ',') {
-            row.push(field.trim());
-            field = '';
+            row.push(field); field = '';
           } else if (char === '\r') {
             // ignore
           } else if (char === '\n') {
-            row.push(field.trim());
-            rows.push(row);
-            row = [];
-            field = '';
+            row.push(field); rows.push(row); row = []; field = '';
           } else {
             field += char;
           }
         }
       }
-      if (field.length > 0 || row.length > 0) {
-        row.push(field.trim());
-        rows.push(row);
-      }
+      if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
 
-      return rows.slice(1).filter(cols => !(cols.length === 1 && cols[0] === '')).map(cols => {
+      return rows.slice(1).filter(cols => !(cols.length === 1 && cols[0].trim() === '')).map(cols => {
+        const get = (i) => (cols[i] !== undefined ? cols[i].trim() : '');
         return {
-          region: cols[0] || '-',
-          country: cols[1] || '-',
-          currency: cols[2] || '-',
-          channel: cols[3] || '-',
-          type: cols[4] || '-',
-          channelId: cols[5] || '-',
-          min: formatNumber(cols[6]),
-          max: formatNumber(cols[7]),
-          pricePointType: cols[8] || '-',
-          decimalSupport: cols[9] || '-',
-          apiIntegration: cols[10] || '-',
-          product: (cols[11] || '-').replace(/\s+/g, ' ').trim()
+          region: get(0) || '-',
+          country: get(1) || '-',
+          currency: get(2) || '-',
+          channel: get(3) || '-',
+          type: get(4) || '-',
+          channelId: get(5) || '-',
+          min: formatNumber(get(6)),
+          max: formatNumber(get(7)),
+          pricePointType: get(8) || '-',
+          decimalSupport: get(9) || '-',
+          apiIntegration: get(10) || '-',
+          product: get(11).replace(/\s+/g, ' ').trim() || '-',
+          specialRequirement: get(12),
+          importantNote: get(13),
+          otherLimits: get(14),
+          apiPayType: get(15),
+          apiPayAt: get(16),
+          apiMnoCode: get(17),
+          apiPayChannel: get(18),
+          apiMandatoryFields: get(19),
+          transactionExpiry: get(20),
+          priceWebPc: get(21),
+          priceMobile: get(22),
+          priceNonGaming: get(23),
+          supportedApiIntegration: get(24),
+          channelStatus: get(25),
+          currencyCode: get(26),
+          countryCode: get(27),
         };
       });
     }
@@ -246,7 +550,7 @@
         rawData = parseCSV(text);
         populateDropdowns();
         applyURLPresets();
-        renderTable();
+        renderCards();
       } catch (err) {
         document.getElementById('countDisplay').innerText = 'Unable to load payment channels. Please ensure the Google Sheet is published to web.';
       }
@@ -268,9 +572,7 @@
       if (presetProduct) {
         const sel = document.getElementById('productSelect');
         const validOptions = Array.from(sel.options).map(o => o.value);
-        if (validOptions.includes(presetProduct)) {
-          sel.value = presetProduct;
-        }
+        if (validOptions.includes(presetProduct)) sel.value = presetProduct;
       }
     }
 
@@ -279,7 +581,233 @@
       sel.innerHTML = `<option value="">${defaultText}</option>` + items.map(i => `<option value="${i}">${i}</option>`).join('');
     }
 
-    function renderTable() {
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function renderProductTags(productStr) {
+      const tags = productStr.split(/\n|(?=\[)/).map(t => t.trim()).filter(Boolean);
+      if (tags.length === 0) return '-';
+      return `<div class="pc-product-tags">${tags.map(t => `<span class="pc-product-tag">${escapeHtml(t)}</span>`).join('')}</div>`;
+    }
+
+    function renderProductStatus(productStr, statusStr) {
+      const applicableProducts = productStr
+        .split(/\n|(?=\[)/)
+        .map(t => t.trim().replace(/^\[|\]$/g, ''))
+        .filter(Boolean);
+
+      if (applicableProducts.length === 0) return '-';
+
+      const statusMap = {};
+      if (!isEmptyValue(statusStr)) {
+        statusStr.split('\n').forEach(line => {
+          const idx = line.indexOf(':');
+          if (idx === -1) return;
+          const name = line.slice(0, idx).trim();
+          const status = line.slice(idx + 1).trim();
+          if (name) statusMap[name] = status;
+        });
+      }
+
+      const rows = applicableProducts.map(product => {
+        const rawStatus = statusMap[product] || '';
+        let badgeClass = 'unknown';
+        let badgeText = rawStatus || '—';
+        const normalized = rawStatus.toLowerCase();
+        if (normalized === 'active') badgeClass = 'active';
+        else if (normalized === 'inactive') badgeClass = 'inactive';
+
+        return `
+          <div class="pc-status-row">
+            <span class="pc-status-name">${escapeHtml(product)}</span>
+            <span class="pc-status-badge ${badgeClass}">${escapeHtml(badgeText)}</span>
+          </div>
+        `;
+      });
+
+      return `<div class="pc-status-list">${rows.join('')}</div>`;
+    }
+
+    function renderPriceList(label, raw) {
+      if (isEmptyValue(raw)) return '';
+      const items = raw.split('\n').map(v => v.trim()).filter(Boolean);
+      return `
+        <div class="pc-collapse-item pc-collapse-full">
+          <span class="pc-collapse-label">${escapeHtml(label)}</span>
+          <div class="pc-pricelist">${items.map(escapeHtml).join(', ')}</div>
+        </div>
+      `;
+    }
+
+    function buildCard(d) {
+      cardIdCounter++;
+      const apiId = `api-collapse-${cardIdCounter}`;
+      const priceId = `price-collapse-${cardIdCounter}`;
+
+      const apiFields = [
+        ['Pay Type', d.apiPayType],
+        ['Pay At', d.apiPayAt],
+        ['mno_code', d.apiMnoCode],
+        ['Pay Channel', d.apiPayChannel],
+        ['Mandatory Fields', d.apiMandatoryFields],
+      ];
+      const apiHasData = apiFields.some(([, v]) => !isEmptyValue(v));
+
+      const priceFields = [
+        ['Web/PC Content', d.priceWebPc],
+        ['Mobile Content', d.priceMobile],
+        ['Non Gaming Content', d.priceNonGaming],
+      ];
+      const priceHasData = d.pricePointType.trim() === 'Fixed Price Points'
+        && priceFields.some(([, v]) => !isEmptyValue(v));
+
+      const supportedText = (d.supportedApiIntegration || '').toLowerCase();
+      const hostedPageEmoji = supportedText.includes('hosted payment page') ? '✅' : '❌';
+      const backendApiAvailable = supportedText.includes('backend api');
+      const backendApiEmoji = backendApiAvailable ? '✅' : '❌';
+
+      const priceToggleHtml = priceHasData
+        ? `<button type="button" class="pc-detail-btn" aria-expanded="false"
+             onclick="pcToggle('${priceId}', this)">Show Detail Fixed Price Point</button>`
+        : '';
+
+      const priceCollapseBody = priceHasData
+        ? `<div class="pc-collapse-grid">${priceFields.map(([label, v]) => renderPriceList(label, v)).join('')}</div>`
+        : '';
+
+      const specialReqValue = isEmptyValue(d.specialRequirement) ? 'None' : d.specialRequirement;
+      const hasImportantNote = !isEmptyValue(d.importantNote);
+
+      const currencyIsUSD = d.currency.trim().toUpperCase() === 'USD';
+      const hasCurrencyCode = !isEmptyValue(d.currencyCode);
+      const currencyLine1 = hasCurrencyCode ? `${d.currency} (${d.currencyCode})` : d.currency;
+      const currencyOtherView = d.currency;
+
+      const hasCountryCode = !isEmptyValue(d.countryCode);
+      const countryCodapayView = hasCountryCode ? `${d.country} (${d.countryCode})` : d.country;
+
+      return `
+        <div class="pc-card">
+          <div class="pc-card-header">
+            <p class="pc-card-title">${escapeHtml(d.channel)}</p>
+          </div>
+
+          <div class="pc-kv">
+            <div class="pc-category">
+              <div class="pc-category-label">General Information</div>
+              <div class="pc-category-body">
+                <div class="pc-kv-item pc-row-lr"><span class="pc-kv-label">Region</span><span class="pc-kv-value">${escapeHtml(d.region)}</span></div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Country<span class="pc-codapay-only-text"> (Code)</span></span>
+                  <span class="pc-currency-codapay-view pc-kv-value">${escapeHtml(countryCodapayView)}</span>
+                  <span class="pc-currency-other-view pc-kv-value">${escapeHtml(d.country)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr"><span class="pc-kv-label">Type</span><span class="pc-kv-value">${escapeHtml(d.type)}</span></div>
+                <div class="pc-kv-item">
+                  <span class="pc-kv-label">Applicable Product/Status</span>
+                  ${renderProductStatus(d.product, d.channelStatus)}
+                </div>
+              </div>
+            </div>
+
+            <div class="pc-category">
+              <div class="pc-category-label">Technical Information</div>
+              <div class="pc-category-body">
+                <div class="pc-kv-item pc-row-lr" style="align-items: flex-start;">
+                  <span class="pc-kv-label">Currency<span class="pc-codapay-only-text"> (Code)</span></span>
+                  <span class="pc-currency-codapay-view pc-currency-stack">
+                    <span class="pc-currency-line">${escapeHtml(currencyLine1)}</span>
+                    ${!currencyIsUSD ? `<span class="pc-currency-line">USD (840)</span>` : ''}
+                  </span>
+                  <span class="pc-currency-other-view pc-kv-value">${escapeHtml(currencyOtherView)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Channel ID/payType</span>
+                  <span class="pc-kv-value mono">${escapeHtml(d.channelId)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Min (Local Currency)</span>
+                  <span class="pc-kv-value">${escapeHtml(d.min)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Max (Local Currency)</span>
+                  <span class="pc-kv-value">${escapeHtml(d.max)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Price Point Type</span>
+                  <span class="pc-kv-value">${escapeHtml(d.pricePointType)}</span>
+                </div>
+                ${priceHasData ? `
+                  <div class="pc-kv-item">
+                    ${priceToggleHtml}
+                    <div class="pc-collapse pc-collapse-inline" id="${priceId}">${priceCollapseBody}</div>
+                  </div>
+                ` : ''}
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Other Limits</span>
+                  <span class="pc-kv-value">${escapeHtml(displayOrDash(d.otherLimits))}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Decimal Support</span>
+                  <span class="pc-kv-value">${escapeHtml(d.decimalSupport)}</span>
+                </div>
+                <div class="pc-kv-item pc-row-lr">
+                  <span class="pc-kv-label">Transaction Expiry Time</span>
+                  <span class="pc-kv-value">${escapeHtml(displayOrDash(d.transactionExpiry))}</span>
+                </div>
+
+                <div class="pc-codapay-only">
+                  <div class="pc-subsection-label">Codapay Channel Detail</div>
+                  <div class="pc-kv-item pc-row-lr">
+                    <span class="pc-kv-label">Hosted Payment Page</span>
+                    <span class="pc-emoji">${hostedPageEmoji}</span>
+                  </div>
+                  <div class="pc-api-row">
+                    ${backendApiAvailable ? `<div class="pc-codapay-box">
+                      <div class="pc-kv-item">
+                        <span class="pc-kv-label">Backend API Integration</span>
+                      </div>
+                      ${apiHasData ? `<div class="pc-kv-item"><div class="pc-collapse-grid">
+                          ${apiFields.map(([label, v]) => isEmptyValue(v) ? '' : `
+                            <div class="pc-collapse-item">
+                              <span class="pc-collapse-label">${escapeHtml(label)}</span>
+                              <span class="pc-collapse-value">${escapeHtml(v)}</span>
+                            </div>
+                          `).join('')}
+                        </div></div>` : ''}
+                    </div>
+                    <span class="pc-emoji pc-api-status">${backendApiEmoji}</span>` : `<div class="pc-kv-item pc-row-lr" style="flex: 1;">
+                      <span class="pc-kv-label">Backend API Integration</span>
+                      <span class="pc-emoji">${backendApiEmoji}</span>
+                    </div>`}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pc-category">
+              <div class="pc-category-label">Special Requirement</div>
+              <div class="pc-category-body">
+                <div class="pc-kv-item">
+                  <div class="pc-note">
+                    ${escapeHtml(specialReqValue)}
+                    ${hasImportantNote ? `
+                      <div class="pc-note-divider"></div>
+                      <span class="pc-note-label important">
+                        <span class="bang">!</span> Important Note
+                      </span>${escapeHtml(d.importantNote)}
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCards() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const region = document.getElementById('regionSelect').value;
       const country = document.getElementById('countrySelect').value;
@@ -300,53 +828,42 @@
       });
 
       document.getElementById('countDisplay').innerText = `Showing ${filtered.length} channel(s)`;
-      const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = '';
+      const grid = document.getElementById('cardGrid');
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">No payment channels matched your selection.</td></tr>';
+        grid.innerHTML = '<div class="pc-empty">No payment channels matched your selection.</div>';
         return;
       }
 
-      filtered.forEach(d => {
-        const tr = document.createElement('tr');
+      cardIdCounter = 0;
+      grid.innerHTML = filtered.map(buildCard).join('');
+      updateCodapayOnlyVisibility(product);
+    }
 
-        const infoHtml = `
-          <div class="info-col">
-            <div>Region: <strong>${d.region}</strong></div>
-            <div>Country: <strong>${d.country}</strong></div>
-            <div>Currency: <strong>${d.currency}</strong></div>
-            <div>Type: <strong>${d.type}</strong></div>
-          </div>
-        `;
-
-        const detailHtml = `
-          <div class="detail-col">
-            <div class="detail-line">Price Point Type: <strong>${d.pricePointType}</strong></div>
-            <div class="detail-line">Decimal Support: <strong>${d.decimalSupport}</strong></div>
-            <div class="detail-line">Backend API Integration: <strong>${d.apiIntegration}</strong></div>
-            <div class="detail-line">Applicable Product:</div>
-            <div class="detail-wrap"><strong>${d.product}</strong></div>
-          </div>
-        `;
-
-        tr.innerHTML = `
-          <td>${infoHtml}</td>
-          <td class="channel-name-pc">${d.channel}</td>
-          <td><code>${d.channelId}</code></td>
-          <td>${d.min}</td>
-          <td>${d.max}</td>
-          <td>${detailHtml}</td>
-        `;
-        tbody.appendChild(tr);
+    function updateCodapayOnlyVisibility(product) {
+      const shouldShow = !product || product === 'Codapay';
+      document.querySelectorAll('.pc-codapay-only, .pc-codapay-only-text').forEach(el => {
+        el.classList.toggle('pc-hidden', !shouldShow);
+      });
+      document.querySelectorAll('.pc-currency-codapay-view').forEach(el => {
+        el.classList.toggle('pc-hidden', !shouldShow);
+      });
+      document.querySelectorAll('.pc-currency-other-view').forEach(el => {
+        el.classList.toggle('pc-hidden', shouldShow);
       });
     }
 
-    document.getElementById('regionSelect').onchange = renderTable;
-    document.getElementById('countrySelect').onchange = renderTable;
-    document.getElementById('typeSelect').onchange = renderTable;
-    document.getElementById('productSelect').onchange = renderTable;
-    document.getElementById('searchInput').oninput = renderTable;
+    window.pcToggle = function (id, btn) {
+      const el = document.getElementById(id);
+      const isOpen = el.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    };
+
+    document.getElementById('regionSelect').onchange = renderCards;
+    document.getElementById('countrySelect').onchange = renderCards;
+    document.getElementById('typeSelect').onchange = renderCards;
+    document.getElementById('productSelect').onchange = renderCards;
+    document.getElementById('searchInput').oninput = renderCards;
 
     loadData();
   </script>
